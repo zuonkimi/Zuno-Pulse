@@ -4,6 +4,7 @@ const siteRouter = require('./web/site');
 const meRouter = require('./web/me');
 const authRouter = require('./web/auth');
 const profileRouter = require('./web/profile');
+const settingsRouter = require('./web/settings');
 const webNotificationRouter = require('./web/notification');
 const followRouter = require('./api/follow');
 const commentRouter = require('./api/comment');
@@ -28,6 +29,7 @@ function route(app) {
   app.use('/tasks', requireAuth, preventCache, tasksRouter);
   app.use('/me', requireAuth, preventCache, meRouter);
   app.use('/profile', profileRouter);
+  app.use('/settings', requireAuth, preventCache, settingsRouter);
   app.use('/notifications', webNotificationRouter);
   app.use('/users', usersRouter);
 
