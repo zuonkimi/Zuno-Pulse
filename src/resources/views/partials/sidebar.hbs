@@ -1,28 +1,70 @@
 <aside class="sidebar" id="sidebar">
-  {{!-- MOBILE: close button --}}
+  <!-- MOBILE CLOSE -->
   <div class="sidebar-close d-md-none">
-    <button
-      type="button"
-      onclick="sidebarToggle()"
-      class="btn btn-sm btn-outline-light"
-    >
+    <button type="button" onclick="sidebarToggle()">
       <i class="bi bi-x-lg"></i>
     </button>
   </div>
-  <a href="/">
+
+  <a href="/" class="{{#if isHome}}active{{/if}}">
     <i class="bi bi-house-heart"></i>
-    Home
+    <span>Home</span>
   </a>
-  <a href="/tasks">
+
+  <a href="/tasks" class="{{#if isTasks}}active{{/if}}">
     <i class="bi bi-list-task"></i>
-    My Tasks
+    <span>My Tasks</span>
   </a>
-  <a href="/users">
+
+  <a href="/users" class="{{#if isUsers}}active{{/if}}">
     <i class="bi bi-people-fill"></i>
-    Friend Search
+    <span>Friend Search</span>
   </a>
-  <a href="/me/trash-tasks">
+
+  <a href="/me/trash-tasks" class="{{#if isTrash}}active{{/if}}">
     <i class="bi bi-trash3-fill"></i>
-    Trash
+    <span>Trash</span>
   </a>
 </aside>
+
+<!-- MOBILE OVERLAY -->
+<div
+  class="sidebar-overlay"
+  id="sidebarOverlay"
+  onclick="sidebarToggle()"
+></div>
+<aside class="sidebar" id="sidebar">
+  <!-- MOBILE CLOSE -->
+  <div class="sidebar-close d-md-none">
+    <button type="button" onclick="sidebarToggle()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <a href="/" class="{{#if isHome}}active{{/if}}">
+    <i class="bi bi-house-heart"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="/tasks" class="{{#if isTasks}}active{{/if}}">
+    <i class="bi bi-list-task"></i>
+    <span>My Tasks</span>
+  </a>
+
+  <a href="/users" class="{{#if isUsers}}active{{/if}}">
+    <i class="bi bi-people-fill"></i>
+    <span>Friend Search</span>
+  </a>
+
+  <a href="/me/trash-tasks" class="{{#if isTrash}}active{{/if}}">
+    <i class="bi bi-trash3-fill"></i>
+    <span>Trash</span>
+  </a>
+</aside>
+
+<!-- MOBILE OVERLAY -->
+<div
+  class="sidebar-overlay"
+  id="sidebarOverlay"
+  onclick="sidebarToggle()"
+></div>

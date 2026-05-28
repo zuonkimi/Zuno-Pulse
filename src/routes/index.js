@@ -12,6 +12,7 @@ const apiNotificationRouter = require('./api/notification');
 const requireAuth = require('../app/middlewares/auth');
 const preventCache = require('../app/middlewares/preventCache');
 const notificationMiddleware = require('../app/middlewares/notification');
+const themeMiddleware = require('../app/middlewares/theme');
 
 function route(app) {
   //public
@@ -26,6 +27,7 @@ function route(app) {
     preventCache,
     apiNotificationRouter,
   );
+  app.use(themeMiddleware);
   app.use('/tasks', requireAuth, preventCache, tasksRouter);
   app.use('/me', requireAuth, preventCache, meRouter);
   app.use('/profile', profileRouter);

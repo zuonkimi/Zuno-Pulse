@@ -75,6 +75,12 @@
   }
 }
 
+// HOVER EFFECT
+@mixin btn-hover-shadow($color) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px color-mix(in srgb, #{$color} 30%, transparent);
+}
+
 // RESPONSIVE
 @mixin respond($breakpoint) {
   @if $breakpoint == sm {

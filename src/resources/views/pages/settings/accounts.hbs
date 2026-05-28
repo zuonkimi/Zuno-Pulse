@@ -1,0 +1,206 @@
+<div class="connected-page">
+  <!-- HEADER -->
+  <div class="connected-header">
+    <div>
+      <h2>Connected Accounts</h2>
+
+      <p>Manage third-party services linked to your account.</p>
+    </div>
+
+    <a href="/settings" class="btn btn-outline-secondary connected-back-btn">
+      <i class="bi bi-arrow-left"></i>
+      Back
+    </a>
+  </div>
+
+  <!-- GRID -->
+  <div class="connected-grid">
+    <!-- GOOGLE -->
+    <div class="connected-card">
+      <div class="connected-card-glow"></div>
+
+      <div class="connected-top">
+        <div class="connected-icon google">
+          <i class="bi bi-google"></i>
+        </div>
+
+        <div class="connected-info">
+          <h4>Google</h4>
+
+          <p>Sign in and sync using your Google account.</p>
+        </div>
+      </div>
+
+      <div class="connected-status">
+        {{#if connectedAccounts.google}}
+        <span class="status-badge connected">
+          <i class="bi bi-check-circle-fill"></i>
+          Connected
+        </span>
+        {{else}}
+        <span class="status-badge disconnected">
+          <i class="bi bi-x-circle-fill"></i>
+          Not Connected
+        </span>
+        {{/if}}
+      </div>
+
+      <div class="connected-action">
+        {{#if connectedAccounts.google}}
+
+        <form method="POST" action="/settings/accounts/disconnect/google">
+          <button class="disconnect-btn">Disconnect</button>
+        </form>
+
+        {{else}}
+
+        <form method="POST" action="/settings/accounts/connect/google">
+          <button class="connect-btn">Connect</button>
+        </form>
+
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- GITHUB -->
+    <div class="connected-card">
+      <div class="connected-card-glow"></div>
+
+      <div class="connected-top">
+        <div class="connected-icon github">
+          <i class="bi bi-github"></i>
+        </div>
+
+        <div class="connected-info">
+          <h4>GitHub</h4>
+
+          <p>Connect your developer profile and repositories.</p>
+        </div>
+      </div>
+
+      <div class="connected-status">
+        {{#if connectedAccounts.github}}
+        <span class="status-badge connected">
+          <i class="bi bi-check-circle-fill"></i>
+          Connected
+        </span>
+        {{else}}
+        <span class="status-badge disconnected">
+          <i class="bi bi-x-circle-fill"></i>
+          Not Connected
+        </span>
+        {{/if}}
+      </div>
+
+      <div class="connected-action">
+        {{#if connectedAccounts.github}}
+
+        <form method="POST" action="/settings/accounts/disconnect/github">
+          <button class="disconnect-btn">Disconnect</button>
+        </form>
+
+        {{else}}
+
+        <form method="POST" action="/settings/accounts/connect/github">
+          <button class="connect-btn">Connect</button>
+        </form>
+
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- FACEBOOK -->
+    <div class="connected-card">
+      <div class="connected-card-glow"></div>
+
+      <div class="connected-top">
+        <div class="connected-icon facebook">
+          <i class="bi bi-facebook"></i>
+        </div>
+
+        <div class="connected-info">
+          <h4>Facebook</h4>
+
+          <p>Login and interact using your Facebook account.</p>
+        </div>
+      </div>
+
+      <div class="connected-status">
+        {{#if connectedAccounts.facebook}}
+        <span class="status-badge connected">
+          <i class="bi bi-check-circle-fill"></i>
+          Connected
+        </span>
+        {{else}}
+        <span class="status-badge disconnected">
+          <i class="bi bi-x-circle-fill"></i>
+          Not Connected
+        </span>
+        {{/if}}
+      </div>
+
+      <div class="connected-action">
+        {{#if connectedAccounts.facebook}}
+
+        <form method="POST" action="/settings/accounts/disconnect/facebook">
+          <button class="disconnect-btn">Disconnect</button>
+        </form>
+
+        {{else}}
+
+        <form method="POST" action="/settings/accounts/connect/facebook">
+          <button class="connect-btn">Connect</button>
+        </form>
+
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- LINE -->
+    <div class="connected-card">
+      <div class="connected-card-glow"></div>
+
+      <div class="connected-top">
+        <div class="connected-icon line">
+          <i class="bi bi-chat-dots-fill"></i>
+        </div>
+
+        <div class="connected-info">
+          <h4>LINE</h4>
+
+          <p>Connect your LINE account for easier access.</p>
+        </div>
+      </div>
+
+      <div class="connected-status">
+        {{#if connectedAccounts.line}}
+        <span class="status-badge connected">
+          <i class="bi bi-check-circle-fill"></i>
+          Connected
+        </span>
+        {{else}}
+        <span class="status-badge disconnected">
+          <i class="bi bi-x-circle-fill"></i>
+          Not Connected
+        </span>
+        {{/if}}
+      </div>
+
+      <div class="connected-action">
+        {{#if connectedAccounts.line}}
+
+        <form method="POST" action="/settings/accounts/disconnect/line">
+          <button class="disconnect-btn">Disconnect</button>
+        </form>
+
+        {{else}}
+
+        <form method="POST" action="/settings/accounts/connect/line">
+          <button class="connect-btn">Connect</button>
+        </form>
+
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

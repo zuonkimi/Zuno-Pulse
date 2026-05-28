@@ -17,7 +17,7 @@
       rel="stylesheet"
     />
   </head>
-  <body class="main-layout">
+  <body data-theme="{{theme}}" style="--primary: {{accentColor}};">
     <div class="app-layout">
       {{> sidebar}}
       <div class="main-area">
@@ -42,6 +42,17 @@
           window.location.reload();
         }
       };
+      (() => {
+        const theme = document.body.dataset.theme;
+
+        if (theme === 'system') {
+          const isDark = window.matchMedia(
+            '(prefers-color-scheme: dark)',
+          ).matches;
+
+          document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        }
+      })();
       // show/hide button
       const scrollBtn = document.getElementById('scrollTopBtn');
       window.addEventListener('scroll', () => {

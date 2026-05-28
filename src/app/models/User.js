@@ -35,6 +35,12 @@ const UserSchema = new Schema(
     googleId: String,
     lineId: String,
     facebookId: String,
+    connectedAccounts: {
+      google: { type: Boolean, default: false },
+      line: { type: Boolean, default: false },
+      facebook: { type: Boolean, default: false },
+      github: { type: Boolean, default: false },
+    },
     //local verification
     isVerified: {
       type: Boolean,
@@ -53,6 +59,15 @@ const UserSchema = new Schema(
     resetPasswordExpires: {
       type: Date,
       default: null,
+    },
+    theme: {
+      type: String,
+      enum: ['system', 'light', 'dark'],
+      default: 'system',
+    },
+    accentColor: {
+      type: String,
+      default: '#f2f2f2',
     },
   },
   { timestamps: true },

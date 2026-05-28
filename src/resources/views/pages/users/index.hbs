@@ -5,7 +5,11 @@
       <h5>Discover people</h5>
       <p>Connect with others in the community</p>
     </div>
-    <a href="#" class="view-following">Following</a>
+
+    <a href="#" class="view-following">
+      <i class="bi bi-people"></i>
+      Following
+    </a>
   </div>
 
   <!-- LIST -->
@@ -16,24 +20,31 @@
       <div class="user-left">
         <a href="/profile/{{this._id}}">
           {{#if this.avatar}}
-          <img src="{{this.avatar}}" class="user-avatar" />
+          <img src="{{this.avatar}}" alt="{{this.name}}" class="user-avatar" />
           {{else}}
           <div class="user-avatar-placeholder">{{this.name.[0]}}</div>
           {{/if}}
         </a>
+
         <div class="user-meta">
           <a href="/profile/{{this._id}}" class="user-name"> {{this.name}} </a>
+
           {{#if this.email}}
-          <span class="user-subtext">{{this.email}}</span>
+          <span class="user-subtext"> {{this.email}} </span>
           {{/if}}
         </div>
       </div>
+
       <!-- RIGHT -->
       <button
         class="btn follow-btn {{#if this.isFollowing}}btn-secondary{{else}}btn-primary{{/if}}"
         onclick="{{#if this.isFollowing}}unfollow('{{this._id}}', this){{else}}follow('{{this._id}}', this){{/if}}"
       >
-        {{#if this.isFollowing}}Following{{else}}Follow{{/if}}
+        {{#if this.isFollowing}}
+        <i class="bi bi-check2"></i>
+        Following {{else}}
+        <i class="bi bi-plus-lg"></i>
+        Follow {{/if}}
       </button>
     </div>
     {{/each}}
@@ -43,38 +54,53 @@
 <script>
   async function follow(userId, btn) {
     btn.disabled = true;
+
     try {
       const res = await fetch(`/api/follow/${userId}`, {
         method: 'POST',
       });
+
       const data = await res.json();
+
       if (data.following) {
-        btn.innerText = 'Unfollow';
+        btn.innerHTML = '<i class="bi bi-check2"></i> Following';
+
         btn.classList.remove('btn-primary');
+
         btn.classList.add('btn-secondary');
+
         btn.onclick = () => unfollow(userId, btn);
       }
     } catch (err) {
       console.error(err);
     }
+
     btn.disabled = false;
   }
+
   async function unfollow(userId, btn) {
     btn.disabled = true;
+
     try {
       const res = await fetch(`/api/follow/${userId}`, {
         method: 'DELETE',
       });
+
       const data = await res.json();
+
       if (!data.following) {
-        btn.innerText = 'Follow';
+        btn.innerHTML = '<i class="bi bi-plus-lg"></i> Follow';
+
         btn.classList.remove('btn-secondary');
+
         btn.classList.add('btn-primary');
+
         btn.onclick = () => follow(userId, btn);
       }
     } catch (err) {
       console.error(err);
     }
+
     btn.disabled = false;
   }
 </script>

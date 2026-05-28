@@ -1,66 +1,92 @@
-<div class="task-list-container mt-4">
+<div class="task-list-container">
   <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="task-list-header">
     <div>
-      <h2 class="fw-semibold">Task Management</h2>
-      <small class="text-muted">Manage all your tasks</small>
+      <h2>Task Management</h2>
+      <small> Manage all your tasks </small>
     </div>
-    <a href="/tasks/create" class="btn btn-primary"> + Create Task </a>
+
+    <a href="/tasks/create" class="btn btn-primary">
+      <i class="bi bi-plus-lg"></i>
+      Create Task
+    </a>
   </div>
-  <!-- FILTER BAR -->
-  <div class="filter-bar mb-3">
-    <a href="/tasks" class="filter-item">All</a>
-    <a href="/tasks?filter=soon" class="filter-item">Soon</a>
-    <a href="/tasks?filter=overdue" class="filter-item">Overdue</a>
-    <a href="/tasks?filter=done" class="filter-item">Done</a>
-    <a href="/me/trash-tasks" class="filter-item">Trash</a>
+
+  <!-- FILTER -->
+  <div class="filter-bar">
+    <a href="/tasks" class="filter-item"> All </a>
+
+    <a href="/tasks?filter=soon" class="filter-item"> Soon </a>
+
+    <a href="/tasks?filter=overdue" class="filter-item"> Overdue </a>
+
+    <a href="/tasks?filter=done" class="filter-item"> Done </a>
+
+    <a href="/me/trash-tasks" class="filter-item"> Trash </a>
   </div>
+
   <!-- TASK LIST -->
   <div class="task-list">
     {{#each tasks}}
+
     <div class="task-card card">
       <div class="card-body">
         <!-- TOP -->
-        <div class="d-flex justify-content-between align-items-start">
-          <!-- TITLE -->
-          <h5 class="task-title mb-1">
-            <a href="/tasks/{{_id}}">{{title}}</a>
-          </h5>
-          <!-- STATUS -->
+        <div class="task-top">
+          <div>
+            <h5 class="task-title">
+              <a href="/tasks/{{_id}}"> {{title}} </a>
+            </h5>
+
+            {{#if description}}
+            <p class="task-desc">{{description}}</p>
+            {{/if}}
+          </div>
+
           <span class="status {{status}}"> {{status}} </span>
         </div>
-        <!-- DESCRIPTION (ADD NHẸ) -->
-        {{#if description}}
-        <p class="task-desc text-muted mb-2">{{description}}</p>
-        {{/if}}
+
         <!-- META -->
-        <div class="task-meta mt-2">
-          <span
-            ><i class="bi bi-calendar-heart-fill"></i> {{formatDate
-            deadline}}</span
-          >
+        <div class="task-meta">
+          <span>
+            <i class="bi bi-calendar-event-fill"></i>
+            {{formatDate deadline}}
+          </span>
         </div>
+
         <!-- ACTION -->
-        <div class="task-actions mt-3">
+        <div class="task-actions">
           <form method="POST" action="/tasks/{{_id}}/status?_method=PATCH">
-            <button class="btn btn-sm btn-success">
+            <button class="task-btn task-btn-success">
+              <i class="bi bi-check-circle-fill"></i>
+
               {{#if (eq status "done")}} Undo {{else}} Done {{/if}}
             </button>
           </form>
-          <a href="/tasks/{{_id}}/edit" class="btn btn-sm btn-warning">
+
+          <a href="/tasks/{{_id}}/edit" class="task-btn task-btn-warning">
+            <i class="bi bi-pencil-square"></i>
             Edit
           </a>
+
           <form method="POST" action="/tasks/{{_id}}?_method=DELETE">
-            <button class="btn btn-sm btn-danger">Delete</button>
+            <button class="task-btn task-btn-danger">
+              <i class="bi bi-trash-fill"></i>
+              Delete
+            </button>
           </form>
         </div>
       </div>
     </div>
+
     {{else}}
+
     <div class="empty-state">
       <h5>No tasks found</h5>
-      <small>Try changing filter or create a new task </small>
+
+      <small> Try changing filter or create a new task </small>
     </div>
+
     {{/each}}
   </div>
 </div>

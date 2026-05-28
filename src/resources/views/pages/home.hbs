@@ -7,18 +7,57 @@
     </div>
   </div>
   <!-- KPI -->
-  <div class="row g-2 g-md-3 mb-3">
+  <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-      <div class="card btn-warning p-2">Soon: {{soonTasks}}</div>
+      <div class="dashboard-kpi warning">
+        <div class="kpi-icon">
+          <i class="bi bi-alarm"></i>
+        </div>
+
+        <div class="kpi-content">
+          <div class="label">Soon</div>
+          <div class="value">{{soonTasks}}</div>
+        </div>
+      </div>
     </div>
+
     <div class="col-6 col-md-3">
-      <div class="card btn-danger p-2">Overdue: {{overdueTasks}}</div>
+      <div class="dashboard-kpi danger">
+        <div class="kpi-icon">
+          <i class="bi bi-fire"></i>
+        </div>
+
+        <div class="kpi-content">
+          <div class="label">Overdue</div>
+          <div class="value">{{overdueTasks}}</div>
+        </div>
+      </div>
     </div>
+
     <div class="col-6 col-md-3">
-      <div class="card btn-success p-2">Done: {{doneTasks}}</div>
+      <div class="dashboard-kpi success">
+        <div class="kpi-icon">
+          <i class="bi bi-check-circle"></i>
+        </div>
+
+        <div class="kpi-content">
+          <div class="label">Done</div>
+          <div class="value">{{doneTasks}}</div>
+        </div>
+      </div>
     </div>
+
     <div class="col-6 col-md-3">
-      <div class="card btn-secondary p-2">Trash: {{trashTask}}</div>
+      <div class="dashboard-kpi secondary">
+        <div class="kpi-icon">
+          <i class="bi bi-trash3"></i>
+        </div>
+
+        <div class="kpi-content">
+          <div class="label">Trash</div>
+          <div class="value">{{trashTask}}</div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- FEED -->
@@ -33,10 +72,7 @@
           </a>
         </div>
         <div>
-          <a
-            href="/profile/{{author._id}}"
-            class="text-decoration-none text-white"
-          >
+          <a href="/profile/{{author._id}}" class="text-decoration-none">
             <strong>{{author.name}}</strong>
           </a>
           <div class="meta">{{formatDate deadline}}</div>
@@ -46,9 +82,7 @@
       {{#if tags}}
       <div class="mb-2">
         {{#each tags}}
-        <a href="#" class="badge btn-info text-dark text-decoration-none">
-          #{{this}}
-        </a>
+        <a href="#" class="badge btn-info text-decoration-none"> #{{this}} </a>
         {{/each}}
       </div>
       {{/if}}

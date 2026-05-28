@@ -1,12 +1,18 @@
 <nav class="navbar">
   <!-- LEFT -->
   <div class="nav-left">
-    <button class="btn btn-dark d-md-none me-2" onclick="sidebarToggle()">
-      <i class="bi bi-three-dots-vertical"></i>
+    <button
+      class="btn nav-icon-btn mobile-sidebar-btn d-md-none"
+      onclick="sidebarToggle()"
+      type="button"
+    >
+      <i class="bi bi-list"></i>
     </button>
+
     <a class="navbar-brand" href="/">
       <img src="/img/img1.png" class="logo-header" alt="logo" />
-      Zuno Pulse
+
+      <span class="brand-text">Zuno Pulse</span>
     </a>
   </div>
 
@@ -20,50 +26,63 @@
         placeholder="Search tasks / documents / users..."
         value="{{activeFilter.keyword}}"
       />
+
       <button type="submit" class="search-btn">
-        <i class="bi bi-search search-icon"></i>
+        <i class="bi bi-search"></i>
       </button>
     </form>
   </div>
 
   <!-- RIGHT -->
   <div class="nav-right">
+    <!-- MOBILE SEARCH -->
+    <button class="btn nav-icon-btn mobile-search-btn d-md-none" type="button">
+      <i class="bi bi-search"></i>
+    </button>
+
     <!-- NOTIFICATION -->
     <div class="dropdown notification-dropdown">
       <!-- DESKTOP -->
       <button
-        class="btn btn-dark position-relative d-none d-md-inline-flex"
+        class="btn nav-icon-btn position-relative d-none d-md-inline-flex"
         data-bs-toggle="dropdown"
+        type="button"
       >
         <i class="bi bi-bell-fill"></i>
+
         {{#if unreadCount}}
         <span class="notification-badge">
-          {{#if (gt unreadCount 99)}}99+{{else}}{{unreadCount}}{{/if}}
+          {{#if (gt unreadCount 99)}} 99+ {{else}} {{unreadCount}} {{/if}}
         </span>
         {{/if}}
       </button>
+
       <!-- MOBILE -->
       <a
         href="/notifications"
-        class="btn btn-dark position-relative d-inline-flex d-md-none"
+        class="btn nav-icon-btn position-relative d-inline-flex d-md-none"
       >
         <i class="bi bi-bell-fill"></i>
+
         {{#if unreadCount}}
         <span class="notification-badge">
-          {{#if (gt unreadCount 99)}}99+{{else}}{{unreadCount}}{{/if}}
+          {{#if (gt unreadCount 99)}} 99+ {{else}} {{unreadCount}} {{/if}}
         </span>
         {{/if}}
       </a>
+
       <!-- DROPDOWN -->
       <div class="dropdown-menu dropdown-menu-end notification-menu">
         <div class="notification-menu-header">
           <span>Notifications</span>
+
           {{#if unreadCount}}
           <form action="/notifications/read-all" method="POST">
             <button type="submit" class="mark-all-btn">Mark all read</button>
           </form>
           {{/if}}
         </div>
+
         {{#if notifications.length}}
         <div class="notification-menu-list">
           {{#each notifications}}
@@ -74,9 +93,11 @@
             <div class="notification-card-avatar">
               <img src="{{this.sender.avatar}}" alt="{{this.sender.name}}" />
             </div>
+
             <div class="notification-card-content">
               <div class="notification-card-text">
                 <strong>{{this.sender.name}}</strong>
+
                 {{#if (eq this.type "comment")}} commented on your task {{/if}}
                 {{#if (eq this.type "like_comment")}} liked your comment {{/if}}
                 {{#if (eq this.type "like_task")}} liked your task {{/if}} {{#if
@@ -84,6 +105,7 @@
                 (eq this.type "follow")}} followed you {{/if}} {{#if (eq
                 this.type "new_task")}} created a new task {{/if}}
               </div>
+
               <div class="notification-card-time">
                 {{timeAgo this.createdAt}}
               </div>
@@ -91,12 +113,15 @@
           </a>
           {{/each}}
         </div>
+
         {{else}}
         <div class="empty-notification">
           <i class="bi bi-bell"></i>
+
           <p>No notifications yet</p>
         </div>
         {{/if}}
+
         <div class="notification-menu-footer">
           <a href="/notifications"> View all notifications </a>
         </div>
@@ -112,10 +137,17 @@
 
     <!-- MENU -->
     <div class="dropdown">
-      <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown">
-        Menu <i class="bi bi-list"></i>
+      <button
+        class="btn nav-menu-btn dropdown-toggle"
+        data-bs-toggle="dropdown"
+        type="button"
+      >
+        <span class="menu-text">Menu</span>
+
+        <i class="bi bi-grid"></i>
       </button>
-      <div class="dropdown-menu">
+
+      <div class="dropdown-menu dropdown-menu-end">
         <a href="/profile/{{currentUser._id}}">
           <i class="bi bi-person-circle"></i>
           Profile
@@ -136,6 +168,7 @@
 </nav>
 
 <!-- MOBILE SEARCH OVERLAY -->
+
 <div class="search-overlay">
   <div class="search-overlay__box">
     <form method="GET" action="/search" class="search-wrapper">
@@ -145,35 +178,44 @@
         class="search-box"
         placeholder="Search tasks / documents / users..."
       />
+
       <button type="submit" class="search-btn">
-        <i class="bi bi-search search-icon"></i>
+        <i class="bi bi-search"></i>
       </button>
     </form>
   </div>
 </div>
 
 <!-- SCRIPT -->
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.querySelector('.search-overlay');
-    const navSearchBtn = document.querySelector('.nav-center .search-btn');
-    if (!overlay || !navSearchBtn) return;
+
+    const mobileSearchBtn = document.querySelector('.mobile-search-btn');
+
+    if (!overlay || !mobileSearchBtn) return;
+
     const input = overlay.querySelector('input[name="keyword"]');
-    navSearchBtn.addEventListener('click', event => {
-      if (window.innerWidth > 600) return;
-      event.preventDefault();
+
+    mobileSearchBtn.addEventListener('click', e => {
+      e.preventDefault();
+
       overlay.classList.add('active');
+
       requestAnimationFrame(() => {
         input?.focus();
       });
     });
-    overlay.addEventListener('click', event => {
-      if (event.target === overlay) {
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) {
         overlay.classList.remove('active');
       }
     });
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') {
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
         overlay.classList.remove('active');
       }
     });

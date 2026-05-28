@@ -1,36 +1,48 @@
 <div class="search-page">
-  <div class="grid grid--2">
+  <div class="grid--2">
     <!-- USERS -->
-    <section class="card search-card">
-      <h3 class="card__title">Peoples</h3>
+    <section class="search-card">
+      <h3 class="card__title">
+        <i class="bi bi-people-fill"></i>
+        Peoples
+      </h3>
+
       {{#if users.length}}
-      <div class="list list--vertical">
+      <div class="list--vertical">
         {{#each users}}
         <a href="/profile/{{this._id}}" class="user-row">
           <div class="avatar avatar--md">
             <img src="{{this.avatar}}" alt="{{this.name}}" />
           </div>
+
           <div class="user-row__info">
             <div class="user-row__name">{{this.name}}</div>
+
             <div class="user-row__sub">@{{this.username}}</div>
           </div>
         </a>
         {{/each}}
       </div>
+
       {{else}}
       <div class="empty">No people found</div>
       {{/if}}
     </section>
 
     <!-- TASKS -->
-    <section class="card search-card">
-      <h3 class="card__title">Tasks Result</h3>
+    <section class="search-card">
+      <h3 class="card__title">
+        <i class="bi bi-card-checklist"></i>
+        Tasks Result
+      </h3>
+
       {{#if tasks.length}}
-      <div class="list list--vertical">
+      <div class="list--vertical">
         {{#each tasks}}
         <div class="task-row">
           <a href="/tasks/{{this._id}}" class="task-row__title">
-            <i class="bi bi-card-list"></i> {{this.title}}
+            <i class="bi bi-card-list"></i>
+            {{this.title}}
           </a>
 
           {{#if this.author}}
@@ -38,15 +50,36 @@
             <div class="avatar avatar--sm">
               <img src="{{this.author.avatar}}" alt="{{this.author.name}}" />
             </div>
-            <span>{{this.author.name}}</span>
+
+            <span> {{this.author.name}} </span>
           </div>
           {{/if}}
         </div>
         {{/each}}
       </div>
+
       {{else}}
       <div class="empty">No tasks found</div>
       {{/if}}
     </section>
+  </div>
+</div>
+
+<!-- MOBILE SEARCH OVERLAY -->
+<div class="search-overlay">
+  <div class="search-overlay__box">
+    <form method="GET" action="/search" class="search-wrapper">
+      <input
+        type="text"
+        name="keyword"
+        class="search-box"
+        placeholder="Search users / tasks..."
+        value="{{activeFilter.keyword}}"
+      />
+
+      <button type="submit" class="search-btn">
+        <i class="bi bi-search search-icon"></i>
+      </button>
+    </form>
   </div>
 </div>
