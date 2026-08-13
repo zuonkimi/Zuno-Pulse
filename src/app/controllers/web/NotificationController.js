@@ -52,6 +52,8 @@ class NotificationController {
           return res.redirect(
             `/tasks/${notification.task}#comment-${notification.comment}`,
           );
+        case 'role':
+          return res.redirect('/admin/users');
         default:
           return res.redirect('/notifications');
       }

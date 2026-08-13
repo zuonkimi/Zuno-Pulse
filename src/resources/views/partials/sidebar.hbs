@@ -1,70 +1,105 @@
 <aside class="sidebar" id="sidebar">
-  <!-- MOBILE CLOSE -->
-  <div class="sidebar-close d-md-none">
+  <!-- CLOSE (mobile) -->
+  <div class="sidebar-close">
     <button type="button" onclick="sidebarToggle()">
       <i class="bi bi-x-lg"></i>
     </button>
   </div>
 
-  <a href="/" class="{{#if isHome}}active{{/if}}">
-    <i class="bi bi-house-heart"></i>
-    <span>Home</span>
-  </a>
+  <!-- TOP -->
+  <div class="sidebar-top">
+    <a href="/" class="{{#if isHome}}active{{/if}}">
+      <i class="bi bi-house-heart"></i>
+      <span>Home</span>
+    </a>
 
-  <a href="/tasks" class="{{#if isTasks}}active{{/if}}">
-    <i class="bi bi-list-task"></i>
-    <span>My Tasks</span>
-  </a>
+    {{#if isAdmin}}
 
-  <a href="/users" class="{{#if isUsers}}active{{/if}}">
-    <i class="bi bi-people-fill"></i>
-    <span>Friend Search</span>
-  </a>
+    <a href="/admin/tasks" class="{{#if isAdminTasks}}active{{/if}}">
+      <i class="bi bi-list-task"></i>
+      <span>Admin Tasks</span>
+    </a>
 
-  <a href="/me/trash-tasks" class="{{#if isTrash}}active{{/if}}">
-    <i class="bi bi-trash3-fill"></i>
-    <span>Trash</span>
-  </a>
-</aside>
+    <a href="/admin/users" class="{{#if isUsers}}active{{/if}}">
+      <i class="bi bi-people-fill"></i>
+      <span>Manage Users</span>
+    </a>
 
-<!-- MOBILE OVERLAY -->
-<div
-  class="sidebar-overlay"
-  id="sidebarOverlay"
-  onclick="sidebarToggle()"
-></div>
-<aside class="sidebar" id="sidebar">
-  <!-- MOBILE CLOSE -->
-  <div class="sidebar-close d-md-none">
-    <button type="button" onclick="sidebarToggle()">
-      <i class="bi bi-x-lg"></i>
-    </button>
+    <a href="/admin/trash/tasks" class="{{#if isAdminTrash}}active{{/if}}">
+      <i class="bi bi-trash3-fill"></i>
+      <span>Admin Trash</span>
+    </a>
+
+    {{else}}
+
+    <a href="/tasks" class="{{#if isUserTasks}}active{{/if}}">
+      <i class="bi bi-list-task"></i>
+      <span>My Tasks</span>
+    </a>
+
+    <a href="/users" class="{{#if isUsers}}active{{/if}}">
+      <i class="bi bi-people-fill"></i>
+      <span>Friend Search</span>
+    </a>
+
+    <a href="/tasks/trash-list" class="{{#if isUserTrash}}active{{/if}}">
+      <i class="bi bi-trash3-fill"></i>
+      <span>Trash</span>
+    </a>
+
+    {{/if}}
   </div>
 
-  <a href="/" class="{{#if isHome}}active{{/if}}">
-    <i class="bi bi-house-heart"></i>
-    <span>Home</span>
-  </a>
+  <!-- CREATE BUTTON -->
+  <div class="sidebar-create">
+    <a href="/tasks/create" class="create-btn">
+      <i class="bi bi-plus-circle"></i>
+      <span>Create</span>
+    </a>
+  </div>
 
-  <a href="/tasks" class="{{#if isTasks}}active{{/if}}">
-    <i class="bi bi-list-task"></i>
-    <span>My Tasks</span>
-  </a>
+  <!-- BOTTOM -->
+  <div class="sidebar-bottom">
+    {{#if isAdmin}}
+    <div class="sidebar-section">
+      <small>ADMIN</small>
+      <a href="/tasks" class="{{#if isUserTasks}}active{{/if}}">
+        <i class="bi bi-list-task"></i>
+        <span>My Tasks</span>
+      </a>
+      <a href="/settings">
+        <i class="bi bi-gear"></i>
+        Settings
+      </a>
+    </div>
+    {{else}}
+    <div class="sidebar-section">
+      <small>PERSONAL</small>
+      <a href="/profile/{{currentUser._id}}">
+        <i class="bi bi-person-circle"></i>
+        Profile
+      </a>
+      <a href="/settings">
+        <i class="bi bi-gear"></i>
+        Settings
+      </a>
+    </div>
+    {{/if}}
 
-  <a href="/users" class="{{#if isUsers}}active{{/if}}">
-    <i class="bi bi-people-fill"></i>
-    <span>Friend Search</span>
-  </a>
-
-  <a href="/me/trash-tasks" class="{{#if isTrash}}active{{/if}}">
-    <i class="bi bi-trash3-fill"></i>
-    <span>Trash</span>
-  </a>
+    <div class="sidebar-footer">© 2026 Task App</div>
+  </div>
 </aside>
 
-<!-- MOBILE OVERLAY -->
+<!-- OVERLAY -->
 <div
   class="sidebar-overlay"
   id="sidebarOverlay"
   onclick="sidebarToggle()"
 ></div>
+
+<script>
+  function sidebarToggle() {
+    document.getElementById('sidebar').classList.toggle('show-toggle');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
+  }
+</script>

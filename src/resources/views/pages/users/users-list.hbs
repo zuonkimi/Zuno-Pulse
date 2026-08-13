@@ -25,10 +25,8 @@
           <div class="user-avatar-placeholder">{{this.name.[0]}}</div>
           {{/if}}
         </a>
-
         <div class="user-meta">
           <a href="/profile/{{this._id}}" class="user-name"> {{this.name}} </a>
-
           {{#if this.email}}
           <span class="user-subtext"> {{this.email}} </span>
           {{/if}}
@@ -54,53 +52,39 @@
 <script>
   async function follow(userId, btn) {
     btn.disabled = true;
-
     try {
       const res = await fetch(`/api/follow/${userId}`, {
         method: 'POST',
       });
-
       const data = await res.json();
-
       if (data.following) {
         btn.innerHTML = '<i class="bi bi-check2"></i> Following';
-
         btn.classList.remove('btn-primary');
-
         btn.classList.add('btn-secondary');
-
         btn.onclick = () => unfollow(userId, btn);
       }
     } catch (err) {
       console.error(err);
     }
-
     btn.disabled = false;
   }
 
   async function unfollow(userId, btn) {
     btn.disabled = true;
-
     try {
       const res = await fetch(`/api/follow/${userId}`, {
         method: 'DELETE',
       });
-
       const data = await res.json();
-
       if (!data.following) {
         btn.innerHTML = '<i class="bi bi-plus-lg"></i> Follow';
-
         btn.classList.remove('btn-secondary');
-
         btn.classList.add('btn-primary');
-
         btn.onclick = () => follow(userId, btn);
       }
     } catch (err) {
       console.error(err);
     }
-
     btn.disabled = false;
   }
 </script>

@@ -8,10 +8,8 @@
     >
       <i class="bi bi-list"></i>
     </button>
-
     <a class="navbar-brand" href="/">
       <img src="/img/img1.png" class="logo-header" alt="logo" />
-
       <span class="brand-text">Zuno Pulse</span>
     </a>
   </div>
@@ -26,7 +24,6 @@
         placeholder="Search tasks / documents / users..."
         value="{{activeFilter.keyword}}"
       />
-
       <button type="submit" class="search-btn">
         <i class="bi bi-search"></i>
       </button>
@@ -39,7 +36,6 @@
     <button class="btn nav-icon-btn mobile-search-btn d-md-none" type="button">
       <i class="bi bi-search"></i>
     </button>
-
     <!-- NOTIFICATION -->
     <div class="dropdown notification-dropdown">
       <!-- DESKTOP -->
@@ -49,7 +45,6 @@
         type="button"
       >
         <i class="bi bi-bell-fill"></i>
-
         {{#if unreadCount}}
         <span class="notification-badge">
           {{#if (gt unreadCount 99)}} 99+ {{else}} {{unreadCount}} {{/if}}
@@ -63,7 +58,6 @@
         class="btn nav-icon-btn position-relative d-inline-flex d-md-none"
       >
         <i class="bi bi-bell-fill"></i>
-
         {{#if unreadCount}}
         <span class="notification-badge">
           {{#if (gt unreadCount 99)}} 99+ {{else}} {{unreadCount}} {{/if}}
@@ -75,14 +69,12 @@
       <div class="dropdown-menu dropdown-menu-end notification-menu">
         <div class="notification-menu-header">
           <span>Notifications</span>
-
           {{#if unreadCount}}
           <form action="/notifications/read-all" method="POST">
             <button type="submit" class="mark-all-btn">Mark all read</button>
           </form>
           {{/if}}
         </div>
-
         {{#if notifications.length}}
         <div class="notification-menu-list">
           {{#each notifications}}
@@ -93,19 +85,19 @@
             <div class="notification-card-avatar">
               <img src="{{this.sender.avatar}}" alt="{{this.sender.name}}" />
             </div>
-
             <div class="notification-card-content">
               <div class="notification-card-text">
                 <strong>{{this.sender.name}}</strong>
-
                 {{#if (eq this.type "comment")}} commented on your task {{/if}}
                 {{#if (eq this.type "like_comment")}} liked your comment {{/if}}
                 {{#if (eq this.type "like_task")}} liked your task {{/if}} {{#if
                 (eq this.type "reply")}} replied to your comment {{/if}} {{#if
                 (eq this.type "follow")}} followed you {{/if}} {{#if (eq
-                this.type "new_task")}} created a new task {{/if}}
+                this.type "new_task")}} created a new task {{/if}} {{#if (eq
+                this.type "role")}} changed your role {{/if}} {{#if (eq
+                this.type "ban")}} {{#if this.sender.isBanned}} banned you
+                {{else}} unbanned you {{/if}} {{/if}}
               </div>
-
               <div class="notification-card-time">
                 {{timeAgo this.createdAt}}
               </div>
@@ -113,17 +105,97 @@
           </a>
           {{/each}}
         </div>
-
         {{else}}
         <div class="empty-notification">
           <i class="bi bi-bell"></i>
-
           <p>No notifications yet</p>
         </div>
         {{/if}}
-
         <div class="notification-menu-footer">
           <a href="/notifications"> View all notifications </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGE -->
+    <div class="dropdown message-dropdown">
+      <button
+        class="btn nav-icon-btn position-relative"
+        data-bs-toggle="dropdown"
+        type="button"
+      >
+        <i class="bi bi-chat-dots-fill"></i>
+
+        {{#if messageUnreadCount}}
+        <span class="notification-badge"> {{messageUnreadCount}} </span>
+        {{/if}}
+      </button>
+
+      <div class="dropdown-menu dropdown-menu-end message-menu">
+        <div class="notification-menu-header">
+          <span>Messages</span>
+        </div>
+
+        {{#if messageDropdown.length}}
+
+        <div class="message-dropdown-list">
+          {{#each messageDropdown}}
+
+          <a
+            href="#"
+            class="message-card {{#if this.unread}}unread{{/if}}"
+            data-conversation-id="{{this._id}}"
+            data-user-name="{{this.otherUser.name}}"
+            data-user-avatar="{{this.otherUser.avatar}}"
+            data-popup-user-id="{{this.otherUser._id}}"
+          >
+            <div class="message-avatar-wrapper">
+              <img
+                src="{{this.otherUser.avatar}}"
+                class="message-avatar"
+                alt="{{this.otherUser.name}}"
+              />
+
+              <span
+                class="online-dot"
+                data-online-dot="{{this.otherUser._id}}"
+                style="{{#unless this.otherUser.isOnline}}display:none{{else}}display:block{{/unless}}"
+              ></span>
+            </div>
+
+            <div class="message-info">
+              <div class="message-top">
+                <div class="message-name">{{this.otherUser.name}}</div>
+
+                <div class="message-time">
+                  {{formatTime this.lastMessageAt}}
+                </div>
+              </div>
+
+              <div class="message-bottom">
+                <div class="message-last">{{this.lastMessage}}</div>
+
+                {{#if this.unread}}
+                <span class="message-unread-dot"></span>
+                {{/if}}
+              </div>
+            </div>
+          </a>
+
+          {{/each}}
+        </div>
+
+        {{else}}
+
+        <div class="empty-notification">
+          <i class="bi bi-chat"></i>
+          <p>No messages yet</p>
+        </div>
+
+        {{/if}}
+
+        <div class="notification-menu-footer">
+          <a href="/messages"> View all messages </a>
         </div>
       </div>
     </div>
@@ -143,21 +215,17 @@
         type="button"
       >
         <span class="menu-text">Menu</span>
-
         <i class="bi bi-grid"></i>
       </button>
-
       <div class="dropdown-menu dropdown-menu-end">
         <a href="/profile/{{currentUser._id}}">
           <i class="bi bi-person-circle"></i>
           Profile
         </a>
-
         <a href="/settings">
           <i class="bi bi-gear"></i>
           Settings
         </a>
-
         <a href="/auth/logout">
           <i class="bi bi-box-arrow-right"></i>
           Logout
@@ -168,7 +236,6 @@
 </nav>
 
 <!-- MOBILE SEARCH OVERLAY -->
-
 <div class="search-overlay">
   <div class="search-overlay__box">
     <form method="GET" action="/search" class="search-wrapper">
@@ -178,7 +245,6 @@
         class="search-box"
         placeholder="Search tasks / documents / users..."
       />
-
       <button type="submit" class="search-btn">
         <i class="bi bi-search"></i>
       </button>
@@ -186,34 +252,24 @@
   </div>
 </div>
 
-<!-- SCRIPT -->
-
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.querySelector('.search-overlay');
-
     const mobileSearchBtn = document.querySelector('.mobile-search-btn');
-
     if (!overlay || !mobileSearchBtn) return;
-
     const input = overlay.querySelector('input[name="keyword"]');
-
     mobileSearchBtn.addEventListener('click', e => {
       e.preventDefault();
-
       overlay.classList.add('active');
-
       requestAnimationFrame(() => {
         input?.focus();
       });
     });
-
     overlay.addEventListener('click', e => {
       if (e.target === overlay) {
         overlay.classList.remove('active');
       }
     });
-
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         overlay.classList.remove('active');

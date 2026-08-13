@@ -41,7 +41,10 @@
             {{#if (eq this.type "like_task")}} liked your task {{/if}} {{#if (eq
             this.type "reply")}} replied to your comment {{/if}} {{#if (eq
             this.type "follow")}} followed you {{/if}} {{#if (eq this.type
-            "new_task")}} created a new task {{/if}}
+            "new_task")}} created a new task {{/if}} {{#if (eq this.type
+            "role")}} changed your role {{/if}} {{#if (eq this.type "ban")}}
+            {{#if this.sender.isBanned}} banned you {{else}} unbanned you
+            {{/if}} {{/if}}
           </div>
           <div class="notification-time">{{timeAgo this.createdAt}}</div>
         </div>

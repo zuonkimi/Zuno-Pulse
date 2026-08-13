@@ -1,0 +1,1207 @@
+<div class="messages-page">
+  <!-- LEFT -->
+  <aside class="conversation-list">
+    <div class="conversation-header">
+      <div class="title">Messages</div>
+
+      <div class="search-box-message">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          class="conversation-search"
+          placeholder="Search..."
+        />
+      </div>
+    </div>
+
+    <div class="conversation-items">
+      {{#each conversations}}
+      <a
+        href="/messages/{{this._id}}"
+        data-conversation-id="{{this._id}}"
+        data-pinned="{{arrayIncludes this.pinnedBy ../currentUserId}}"
+        data-time="{{toTimestamp this.lastMessageAt}}"
+        class="conversation-item
+  {{#if this.isActive}}active{{/if}}
+  {{#if this.unread}}unread{{/if}}"
+      >
+        <div class="avatar-wrapper">
+          <img class="avatar" src="{{this.otherUser.avatar}}" />
+
+          <span
+            class="online-dot"
+            data-online-dot="{{this.otherUser._id}}"
+            style="{{#unless this.otherUser.isOnline}}display:none{{else}}display:block{{/unless}}"
+          ></span>
+        </div>
+
+        <div class="info">
+          <div class="conversation-top">
+            <div class="name">
+              <span
+                class="pin-icon"
+                style="{{#unless (arrayIncludes this.pinnedBy ../currentUserId)}}display:none{{/unless}}"
+              >
+                📌
+              </span>
+
+              {{this.otherUser.name}}
+            </div>
+
+            <div class="right-meta">
+              <div class="conversation-time">
+                {{formatTime this.lastMessageAt}}
+              </div>
+              <div class="conversation-menu-wrapper">
+                <button
+                  type="button"
+                  class="conversation-menu-btn"
+                  data-id="{{this._id}}"
+                >
+                  ⋯
+                </button>
+
+                <div class="conversation-menu" data-menu="{{this._id}}">
+                  <button
+                    type="button"
+                    class="delete-conversation-btn"
+                    data-id="{{this._id}}"
+                  >
+                    Force
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="conversation-bottom">
+            <div class="last">{{this.lastMessage}}</div>
+
+            {{#if this.unread}}
+            <div class="conversation-badge">{{this.unread}}</div>
+            {{/if}}
+          </div>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+  </aside>
+
+  <!-- RIGHT -->
+  <section class="chat">
+    {{#if conversation}}
+    <!-- HEADER -->
+    <div class="chat-header">
+      <div class="chat-user">
+        <div class="chat-avatar-wrapper">
+          <img class="chat-avatar" src="{{conversation.otherUser.avatar}}" />
+
+          <span
+            class="online-dot"
+            data-online-dot="{{conversation.otherUser._id}}"
+            style="{{#unless conversation.otherUser.isOnline}}display:none{{else}}display:block{{/unless}}"
+          ></span>
+        </div>
+        <div class="chat-user-info">
+          <div class="chat-name">{{conversation.otherUser.name}}</div>
+
+          <div
+            class="chat-status"
+            data-chat-user-id="{{conversation.otherUser._id}}"
+          >
+            {{#if conversation.otherUser.isOnline}} Online {{else}} Offline
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-header-actions">
+        <div id="chatMessageSearch">
+          <input
+            type="text"
+            id="chatSearchInput"
+            placeholder="Search messages..."
+          />
+
+          <span id="searchCounter"></span>
+          <button type="button" id="closeSearchBtn">✕</button>
+          <button type="button" id="searchPrevBtn">▲</button>
+
+          <button type="button" id="searchNextBtn">▼</button>
+        </div>
+        <button type="button" id="messageSearchBtn">
+          <i class="bi bi-search"></i>
+        </button>
+
+        <div class="chat-menu-wrapper">
+          <button type="button" id="chatMenuBtn">
+            <i class="bi bi-three-dots"></i>
+          </button>
+
+          <div class="chat-menu" id="chatMenu">
+            <button
+              id="pinConversationBtn"
+              data-pinned="{{arrayIncludes conversation.pinnedBy currentUserId}}"
+            >
+              {{#if (arrayIncludes conversation.pinnedBy currentUserId)}} Unpin
+              {{else}} Pin {{/if}}
+            </button>
+            <button id="sharedMediaBtn">Shared Media</button>
+            <button id="deleteConversationBtn">Delete Conversation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Panel Shared Media --}}
+    <div id="sharedMediaPanel" class="shared-media-panel">
+      <div class="shared-header">
+        <div class="shared-title">
+          <h3>Shared Media</h3>
+          <span id="sharedCount"></span>
+        </div>
+
+        <button id="closeSharedMedia">✕</button>
+      </div>
+
+      <div class="shared-tabs">
+        <button class="shared-tab active" data-tab="images">Images</button>
+
+        <button class="shared-tab" data-tab="files">Files</button>
+
+        <button class="shared-tab" data-tab="links">Links</button>
+      </div>
+
+      <div class="shared-content">
+        <div id="sharedImages" class="shared-page active"></div>
+
+        <div id="sharedFiles" class="shared-page"></div>
+
+        <div id="sharedLinks" class="shared-page"></div>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="chat-body">
+      {{#each messages}}
+
+      <!-- DATE GROUP -->
+      {{#if this.showDate}}
+      <div class="date-label">{{this.dateLabel}}</div>
+      {{/if}}
+
+      <!-- MESSAGE -->
+      <div class="msg {{#if this.isMine}}mine{{/if}}">
+        {{#unless this.isMine}}
+        <img class="msg-avatar" src="{{this.sender.avatar}}" />
+        {{/unless}}
+
+        <div class="msg-content">
+          <div class="msg-bubble" data-message-id="{{this._id}}">
+            {{#if (arrayIncludes this.starredBy ../currentUserId)}}
+            <div class="message-star">⭐</div>
+            {{/if}} {{#if this.replySnapshot}}
+            <div class="reply-preview-box" data-reply-id="{{this.replyTo._id}}">
+              {{this.replySnapshot.content}}
+            </div>
+            {{/if}} {{#if this.isRecalled}}
+
+            <i>Tin nhắn đã được thu hồi</i>
+
+            {{else}} {{#if (eq this.type "image")}}
+
+            <img src="{{this.fileUrl}}" class="chat-image" />
+
+            {{else if (eq this.type "file")}}
+
+            <a href="{{this.fileUrl}}" target="_blank">
+              📎 {{this.fileName}}
+            </a>
+
+            {{else}} {{this.content}} {{/if}} {{/if}}
+          </div>
+
+          <div class="msg-time">{{this.time}}</div>
+        </div>
+
+        <!-- MOVE VÀO TRONG msg -->
+        {{#unless this.isRecalled}}
+        <div class="msg-actions">
+          <button class="msg-menu-btn" data-message-id="{{this._id}}">
+            <i class="bi bi-three-dots"></i>
+          </button>
+
+          <div class="msg-menu" data-menu-id="{{this._id}}">
+            <button class="msg-action reply">Reply</button>
+            <button class="msg-action forward">Forward</button>
+            <button
+              class="msg-action star"
+              data-starred="{{arrayIncludes this.starredBy ../currentUserId}}"
+            >
+              {{#if (arrayIncludes this.starredBy ../currentUserId)}} ⭐ Unstar
+              {{else}} ⭐ Star {{/if}}
+            </button>
+            <button class="msg-action recall">Recall</button>
+          </div>
+        </div>
+        {{/unless}}
+      </div>
+      {{/each}}
+    </div>
+    <button type="button" id="scrollToBottomBtn" class="scroll-to-bottom-btn">
+      <i class="bi bi-arrow-down"></i>
+    </button>
+
+    <!-- FOOTER -->
+    <form id="messageForm" class="chat-footer">
+      <div id="messageError" class="message-error"></div>
+      <div id="attachmentPreview" class="attachment-preview"></div>
+      <div id="emojiContainer"></div>
+      <div id="replyPreview" class="reply-preview" style="display: none"></div>
+      <div class="chat-footer-row">
+        <div class="chat-input-wrapper">
+          <div class="chat-tools">
+            <input type="file" id="messageFile" hidden multiple />
+
+            <button type="button" class="tool-btn" id="attachBtn">
+              <i class="bi bi-paperclip"></i>
+            </button>
+
+            <button type="button" class="tool-btn" id="emojiBtn">
+              <i class="bi bi-emoji-smile"></i>
+            </button>
+          </div>
+
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Type a message..."
+          ></textarea>
+        </div>
+
+        <button type="submit" class="send-btn">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </form>
+    {{else}}
+
+    <div class="chat-empty">
+      <i class="bi bi-chat-dots"></i>
+
+      <h3>Select a conversation</h3>
+
+      <p>Choose a conversation from the left to start messaging.</p>
+    </div>
+    {{/if}}
+  </section>
+</div>
+{{#if conversation}}
+<script>
+  window.conversationId = '{{conversation._id}}';
+</script>
+{{/if}}
+
+<script>
+  let replyMessage = null;
+  const chatBody = document.querySelector('.chat-body');
+  const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
+  // MARK READ
+  async function markCurrentConversationRead() {
+    if (!window.conversationId) return;
+
+    try {
+      const res = await fetch(`/messages/read/${window.conversationId}`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) return;
+      const activeConversation = document.querySelector(
+        `.conversation-item[href="/messages/${window.conversationId}"]`,
+      );
+
+      if (activeConversation) {
+        activeConversation.classList.remove('unread');
+
+        const badge = activeConversation.querySelector('.conversation-badge');
+
+        if (badge) {
+          badge.remove();
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  markCurrentConversationRead();
+
+  // =========================
+  // SCROLL
+  // =========================
+
+  if (chatBody) {
+    requestAnimationFrame(() => {
+      chatBody.scrollTop = chatBody.scrollHeight;
+    });
+  }
+
+  // =========================
+  // SEARCH
+  // =========================
+
+  const searchInput = document.querySelector('.conversation-search');
+
+  const listContainer = document.querySelector('.conversation-items');
+
+  let timeout;
+
+  searchInput?.addEventListener('input', e => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(async () => {
+      const q = e.target.value;
+
+      const res = await fetch(`/messages/search?q=${encodeURIComponent(q)}`);
+
+      const data = await res.json();
+
+      renderConversations(data);
+    }, 250);
+  });
+
+  function renderConversations(data) {
+    if (!data.length) {
+      listContainer.innerHTML = `
+        <div class="empty-search">
+          No conversations found
+        </div>
+      `;
+      return;
+    }
+
+    listContainer.innerHTML = data
+      .map(
+        c => `
+        <a
+          href="/messages/${c._id}"
+          data-conversation-id="${c._id}"
+data-pinned="${c.isPinned}"
+data-time="${new Date(c.lastMessageAt).getTime()}"
+          class="
+conversation-item
+${c.unread ? 'unread' : ''}
+${c.isActive ? 'active' : ''}
+"
+        >
+
+          <div class="avatar-wrapper">
+  <img
+    class="avatar"
+    src="${c.otherUser.avatar}"
+  />
+
+  <span
+    class="online-dot"
+    data-online-dot="${c.otherUser._id}"
+    style="${c.otherUser.isOnline ? 'display:block' : 'display:none'}"
+  ></span>
+</div>
+
+          <div class="info">
+
+  <div class="conversation-top">
+    <div class="name">
+      ${c.otherUser.name}
+    </div>
+
+    <div class="conversation-time">
+      ${c.lastMessageAtFormatted || ''}
+    </div>
+  </div>
+
+  <div class="conversation-bottom">
+
+    <div class="last">
+      ${c.lastMessage || ''}
+    </div>
+
+    ${
+      c.unread
+        ? `
+      <div class="conversation-badge">
+        ${c.unread}
+      </div>
+    `
+        : ''
+    }
+
+  </div>
+
+</div>
+
+        </a>
+      `,
+      )
+      .join('');
+  }
+  const messageInput = document.getElementById('messageInput');
+
+  if (messageInput) {
+    messageInput.addEventListener('input', () => {
+      messageInput.style.height = 'auto';
+      messageInput.style.height = messageInput.scrollHeight + 'px';
+    });
+  }
+  // =========================
+  // CLICK CONVERSATION
+  // =========================
+
+  document.addEventListener('click', e => {
+    const item = e.target.closest('.conversation-item');
+
+    if (!item) return;
+    if (e.target.closest('.conversation-menu-btn')) return;
+    item.classList.remove('unread');
+
+    const badge = item.querySelector('.conversation-badge');
+
+    if (badge) {
+      badge.remove();
+    }
+  });
+  let selectedFiles = [];
+  const attachBtn = document.getElementById('attachBtn');
+
+  const fileInput = document.getElementById('messageFile');
+
+  attachBtn?.addEventListener('click', () => fileInput.click());
+
+  const previewBox = document.getElementById('attachmentPreview');
+  const errorBox = document.getElementById('messageError');
+
+  function showError(message) {
+    if (!errorBox) return;
+
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+
+    setTimeout(() => {
+      errorBox.style.display = 'none';
+    }, 5000);
+  }
+  fileInput?.addEventListener('change', () => {
+    const files = [...fileInput.files];
+
+    const MAX_SIZE = 10 * 1024 * 1024;
+
+    const validFiles = [];
+
+    files.forEach(file => {
+      const isAllowed =
+        file.type.startsWith('image/') || file.type === 'application/pdf';
+
+      if (!isAllowed) {
+        showError(`${file.name}: chỉ hỗ trợ ảnh và PDF`);
+        return;
+      }
+
+      if (file.size > MAX_SIZE) {
+        showError(`${file.name}: vượt quá 10MB`);
+        return;
+      }
+
+      const exists = selectedFiles.some(
+        f =>
+          f.name === file.name &&
+          f.size === file.size &&
+          f.lastModified === file.lastModified,
+      );
+
+      if (exists) {
+        showError(`${file.name}: đã được chọn`);
+        return;
+      }
+
+      validFiles.push(file);
+    });
+
+    if (!validFiles.length) {
+      fileInput.value = '';
+      return;
+    }
+
+    selectedFiles.push(...validFiles);
+
+    renderPreview();
+
+    fileInput.value = '';
+  });
+  function renderPreview() {
+    previewBox.innerHTML = '';
+
+    selectedFiles.forEach((file, index) => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+
+        reader.onload = e => {
+          previewBox.insertAdjacentHTML(
+            'beforeend',
+            `
+          <div class="preview-item">
+            <img
+              src="${e.target.result}"
+              class="preview-image"
+            />
+
+            <button
+              type="button"
+              class="remove-preview"
+              data-index="${index}"
+            >
+              ×
+            </button>
+          </div>
+        `,
+          );
+        };
+
+        reader.readAsDataURL(file);
+      } else {
+        previewBox.insertAdjacentHTML(
+          'beforeend',
+          `
+        <div class="preview-item">
+
+          <div class="preview-file">
+            📎 ${file.name}
+          </div>
+
+          <button
+            type="button"
+            class="remove-preview"
+            data-index="${index}"
+          >
+            ×
+          </button>
+
+        </div>
+      `,
+        );
+      }
+    });
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.classList.contains('remove-preview')) return;
+
+    const index = Number(e.target.dataset.index);
+
+    selectedFiles.splice(index, 1);
+
+    renderPreview();
+  });
+  // =========================
+  // EMOJI PICKER
+  // =========================
+
+  const emojiBtn = document.getElementById('emojiBtn');
+
+  const emojiContainer = document.getElementById('emojiContainer');
+
+  let emojiPicker = null;
+
+  emojiBtn?.addEventListener('click', () => {
+    if (emojiPicker) {
+      emojiPicker.remove();
+      emojiPicker = null;
+      return;
+    }
+
+    emojiPicker = document.createElement('emoji-picker');
+
+    emojiContainer.innerHTML = '';
+
+    emojiContainer.appendChild(emojiPicker);
+
+    emojiPicker.addEventListener('emoji-click', event => {
+      messageInput.value += event.detail.unicode;
+
+      messageInput.dispatchEvent(new Event('input'));
+
+      messageInput.focus();
+    });
+  });
+
+  document.addEventListener('click', e => {
+    if (
+      !emojiPicker ||
+      emojiContainer.contains(e.target) ||
+      emojiBtn.contains(e.target)
+    ) {
+      return;
+    }
+
+    emojiPicker.remove();
+    emojiPicker = null;
+  });
+
+  const messageSearchBtn = document.getElementById('messageSearchBtn');
+  const chatMessageSearch = document.getElementById('chatMessageSearch');
+  const chatSearchInput = document.getElementById('chatSearchInput');
+  const searchCounter = document.getElementById('searchCounter');
+  const searchPrevBtn = document.getElementById('searchPrevBtn');
+  const searchNextBtn = document.getElementById('searchNextBtn');
+  const closeSearchBtn = document.getElementById('closeSearchBtn');
+  if (chatMessageSearch) {
+    chatMessageSearch.style.display = 'none';
+  }
+  let searchResults = [];
+  let currentSearchIndex = 0;
+
+  messageSearchBtn?.addEventListener('click', () => {
+    const isOpen = chatMessageSearch.style.display === 'flex';
+
+    if (isOpen) {
+      chatMessageSearch.style.display = 'none';
+      resetSearch();
+    } else {
+      chatMessageSearch.style.display = 'flex';
+      chatSearchInput.focus();
+    }
+  });
+
+  let searchTimeout;
+
+  chatSearchInput?.addEventListener('input', e => {
+    clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(async () => {
+      const keyword = e.target.value.trim();
+
+      if (!keyword) {
+        resetSearch();
+        return;
+      }
+
+      const res = await fetch(
+        `/messages/${window.conversationId}/search-message?q=${encodeURIComponent(keyword)}`,
+      );
+
+      const data = await res.json();
+      highlightSearchResult(data);
+      console.log(data);
+    }, 300);
+  });
+
+  function clearSearchHighlight() {
+    document.querySelectorAll('.msg-bubble.search-highlight').forEach(el => {
+      el.classList.remove('search-highlight');
+    });
+  }
+  function highlightSearchResult(messages) {
+    clearSearchHighlight();
+
+    searchResults = [];
+    currentSearchIndex = 0;
+
+    messages.forEach(msg => {
+      const bubble = document.querySelector(`[data-message-id="${msg._id}"]`);
+
+      if (!bubble) return;
+
+      bubble.classList.add('search-highlight');
+
+      searchResults.push(bubble);
+    });
+
+    updateSearchCounter();
+
+    goToSearchResult(0);
+  }
+
+  function goToSearchResult(index) {
+    if (!searchResults.length) return;
+
+    document
+      .querySelectorAll('.search-current')
+      .forEach(el => el.classList.remove('search-current'));
+
+    currentSearchIndex = index;
+
+    const target = searchResults[currentSearchIndex];
+
+    target.classList.add('search-current');
+
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+
+    updateSearchCounter();
+  }
+
+  function updateSearchCounter() {
+    if (!searchResults.length) {
+      searchCounter.textContent = '0';
+      return;
+    }
+
+    searchCounter.textContent = `${currentSearchIndex + 1}/${searchResults.length}`;
+  }
+  function resetSearch() {
+    clearSearchHighlight();
+
+    searchResults = [];
+    currentSearchIndex = 0;
+
+    searchCounter.textContent = '';
+    chatSearchInput.value = '';
+
+    // ✅ ADD THIS
+    document
+      .querySelectorAll('.search-current')
+      .forEach(el => el.classList.remove('search-current'));
+  }
+  closeSearchBtn?.addEventListener('click', () => {
+    chatSearchInput.value = '';
+    resetSearch();
+    chatSearchInput.focus();
+  });
+  chatSearchInput?.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      resetSearch();
+
+      chatMessageSearch.style.display = 'none';
+    }
+  });
+  searchNextBtn?.addEventListener('click', () => {
+    if (!searchResults.length) return;
+
+    let next = currentSearchIndex + 1;
+
+    if (next >= searchResults.length) {
+      next = 0;
+    }
+
+    goToSearchResult(next);
+  });
+
+  searchPrevBtn?.addEventListener('click', () => {
+    if (!searchResults.length) return;
+
+    let prev = currentSearchIndex - 1;
+
+    if (prev < 0) {
+      prev = searchResults.length - 1;
+    }
+
+    goToSearchResult(prev);
+  });
+
+  chatSearchInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+
+      searchNextBtn.click();
+    }
+  });
+
+  function isNearBottom() {
+    if (!chatBody) return true;
+
+    return (
+      chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 150
+    );
+  }
+  chatBody?.addEventListener('scroll', () => {
+    if (isNearBottom()) {
+      scrollToBottomBtn?.classList.remove('show');
+    } else {
+      scrollToBottomBtn?.classList.add('show');
+    }
+  });
+  scrollToBottomBtn?.addEventListener('click', () => {
+    chatBody.scrollTo({
+      top: chatBody.scrollHeight,
+      behavior: 'smooth',
+    });
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.msg-menu-btn');
+
+    // mở menu
+    if (btn) {
+      e.stopPropagation();
+      const id = btn.dataset.messageId;
+
+      // đóng tất cả menu khác
+      document.querySelectorAll('.msg-menu').forEach(m => {
+        if (m.dataset.menuId !== id) {
+          m.classList.remove('show');
+        }
+      });
+
+      const menu = document.querySelector(`.msg-menu[data-menu-id="${id}"]`);
+
+      if (menu) {
+        menu.classList.toggle('show');
+      }
+
+      return;
+    }
+
+    // click ra ngoài thì đóng hết
+    document.querySelectorAll('.msg-menu').forEach(m => {
+      m.classList.remove('show');
+    });
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.msg-action.reply');
+    if (!btn) return;
+
+    const menu = btn.closest('.msg-menu');
+    const messageId = menu.dataset.menuId;
+
+    const bubble = document.querySelector(`[data-message-id="${messageId}"]`);
+    let previewText = bubble.innerText.trim();
+
+    if (!previewText) {
+      if (bubble.querySelector('.chat-image')) {
+        previewText = '📷 Image';
+      } else if (bubble.querySelector('a[href]')) {
+        previewText = bubble.querySelector('a[href]').textContent.trim();
+      }
+    }
+    if (!bubble) return;
+
+    replyMessage = {
+      id: messageId,
+      text: previewText,
+    };
+
+    showReplyPreview(replyMessage.text);
+  });
+
+  const replyPreview = document.getElementById('replyPreview');
+
+  function showReplyPreview(text) {
+    replyPreview.style.display = 'block';
+
+    scrollToBottomBtn?.classList.add('has-reply');
+
+    replyPreview.innerHTML = `
+    <div style="display:flex; justify-content:space-between;">
+      <div>
+        <div style="font-weight:bold;">Replying to</div>
+        <div>${text}</div>
+      </div>
+      <button id="cancelReply">✕</button>
+    </div>
+  `;
+  }
+  document.addEventListener('click', e => {
+    if (e.target.id === 'cancelReply') {
+      replyMessage = null;
+
+      replyPreview.style.display = 'none';
+
+      scrollToBottomBtn?.classList.remove('has-reply');
+    }
+  });
+  document.addEventListener('click', e => {
+    const preview = e.target.closest(
+      '.reply-preview-box, .reply-message-preview',
+    );
+
+    if (!preview) return;
+
+    const replyId = preview.dataset.replyId;
+
+    const target = document.querySelector(`[data-message-id="${replyId}"]`);
+    console.log(target);
+    if (!target) return;
+
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+
+    document.querySelectorAll('.reply-target-highlight').forEach(el => {
+      el.classList.remove('reply-target-highlight');
+    });
+
+    setTimeout(() => {
+      target.classList.add('reply-target-highlight');
+    }, 300);
+  });
+  document.addEventListener('click', e => {
+    const isReplyPreview = e.target.closest('.reply-preview-box');
+
+    if (isReplyPreview) return;
+
+    document.querySelectorAll('.reply-target-highlight').forEach(el => {
+      el.classList.remove('reply-target-highlight');
+    });
+  });
+
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.msg-action.recall');
+
+    if (!btn) return;
+
+    const menu = btn.closest('.msg-menu');
+
+    const messageId = menu.dataset.menuId;
+
+    if (!confirm('Thu hồi tin nhắn này?')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/messages/recall/${messageId}`, {
+        method: 'POST',
+      });
+
+      const data = await res.json();
+
+      if (!data.success) return;
+
+      const bubble = document.querySelector(`[data-message-id="${messageId}"]`);
+
+      if (!bubble) return;
+
+      bubble.innerHTML = `
+      <i>Tin nhắn đã được thu hồi</i>
+    `;
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.msg-action.star');
+
+    if (!btn) return;
+
+    const menu = btn.closest('.msg-menu');
+
+    const messageId = menu.dataset.menuId;
+
+    const res = await fetch(`/messages/star/${messageId}`, {
+      method: 'POST',
+    });
+
+    const data = await res.json();
+  });
+
+  const chatMenuBtn = document.getElementById('chatMenuBtn');
+  const chatMenu = document.getElementById('chatMenu');
+  const sharedMediaBtn = document.getElementById('sharedMediaBtn');
+  const sharedMediaPanel = document.getElementById('sharedMediaPanel');
+  const closeSharedMedia = document.getElementById('closeSharedMedia');
+
+  chatMenuBtn?.addEventListener('click', e => {
+    e.stopPropagation();
+
+    chatMenu.classList.toggle('show');
+  });
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('#chatMenu') || e.target.closest('#chatMenuBtn'))
+      return;
+    chatMenu?.classList.remove('show');
+  });
+
+  sharedMediaBtn?.addEventListener('click', async e => {
+    e.stopPropagation();
+    chatMenu.classList.remove('show');
+    sharedMediaPanel.classList.add('show');
+    await loadSharedMedia();
+  });
+  closeSharedMedia?.addEventListener('click', () => {
+    sharedMediaPanel.classList.remove('show');
+  });
+  document.querySelectorAll('.shared-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document
+        .querySelectorAll('.shared-tab')
+        .forEach(x => x.classList.remove('active'));
+
+      document
+        .querySelectorAll('.shared-page')
+        .forEach(x => x.classList.remove('active'));
+
+      tab.classList.add('active');
+
+      document
+        .getElementById(
+          'shared' +
+            tab.dataset.tab.charAt(0).toUpperCase() +
+            tab.dataset.tab.slice(1),
+        )
+        .classList.add('active');
+    });
+  });
+
+  document
+    .getElementById('pinConversationBtn')
+    ?.addEventListener('click', async () => {
+      await fetch(`/messages/conversation/${window.conversationId}/pin`, {
+        method: 'POST',
+      });
+    });
+
+  document
+    .getElementById('deleteConversationBtn')
+    ?.addEventListener('click', async () => {
+      if (!confirm('Delete this conversation?')) {
+        return;
+      }
+
+      const res = await fetch(
+        `/messages/conversation/${window.conversationId}`,
+        {
+          method: 'DELETE',
+        },
+      );
+
+      const data = await res.json();
+
+      if (!data.success) return;
+
+      location.href = '/messages';
+    });
+
+  async function loadSharedMedia() {
+    const res = await fetch(`/messages/${window.conversationId}/shared-media`);
+    const data = await res.json();
+    renderSharedMedia(data);
+  }
+  function renderSharedMedia(data) {
+    document.getElementById('sharedCount').textContent =
+      `${data.images.length} Images • ${data.files.length} Files • ${data.links.length} Links`;
+    document.getElementById('sharedImages').innerHTML = data.images.length
+      ? data.images
+          .map(
+            img => `
+        <div
+          class="shared-image-item"
+          data-image="${img.fileUrl}"
+        >
+          <img
+            src="${img.fileUrl}"
+            loading="lazy"
+          />
+        </div>
+      `,
+          )
+          .join('')
+      : `
+      <div class="shared-empty">
+        No images
+      </div>
+    `;
+    document.getElementById('sharedFiles').innerHTML = data.files.length
+      ? data.files
+          .map(
+            file => `
+          <a
+            class="shared-file-item"
+            href="${file.fileUrl}"
+            target="_blank"
+          >
+            📄
+            <span>${file.fileName}</span>
+          </a>
+        `,
+          )
+          .join('')
+      : `
+      <div class="shared-empty">
+        No files
+      </div>
+    `;
+    document.getElementById('sharedLinks').innerHTML = data.links.length
+      ? data.links
+          .map(msg => {
+            const match = msg.content.match(/https?:\/\/\S+/);
+
+            if (!match) return '';
+
+            return `
+          <a
+            class="shared-link-item"
+            href="${match[0]}"
+            target="_blank"
+          >
+            ${match[0]}
+          </a>
+        `;
+          })
+          .join('')
+      : `
+      <div class="shared-empty">
+        No links
+      </div>
+    `;
+  }
+  document.addEventListener('click', e => {
+    const item = e.target.closest('.shared-image-item');
+
+    if (!item) return;
+
+    window.open(item.dataset.image, '_blank');
+  });
+
+  // Conversation menu
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.conversation-menu-btn');
+
+    if (btn) {
+      e.stopPropagation();
+      e.preventDefault();
+      const id = btn.dataset.id;
+
+      document.querySelectorAll('.conversation-menu').forEach(menu => {
+        if (menu.dataset.menu !== id) {
+          menu.classList.remove('show');
+        }
+      });
+
+      const menu = document.querySelector(
+        `.conversation-menu[data-menu="${id}"]`,
+      );
+      menu?.classList.toggle('show');
+
+      return;
+    }
+
+    document.querySelectorAll('.conversation-menu').forEach(menu => {
+      menu.classList.remove('show');
+    });
+  });
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.delete-conversation-btn');
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+
+    if (!confirm('Delete this conversation?')) return;
+
+    const res = await fetch(`/messages/conversation/${id}`, {
+      method: 'DELETE',
+    });
+
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    // xoá UI luôn
+    const item = document.querySelector(
+      `.conversation-item[data-conversation-id="${id}"]`,
+    );
+    item?.remove();
+  });
+</script>

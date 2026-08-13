@@ -71,7 +71,7 @@
 }
 
 .notification-menu-list {
-  max-height: 460px;
+  max-height: 250px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -227,9 +227,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: var(--primary);
-
   color: #fff;
 
   font-size: 12px;

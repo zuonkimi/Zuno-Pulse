@@ -11,34 +11,33 @@
         <div class="avatar-fallback">{{user.name.[0]}}</div>
         {{/if}}
       </div>
-
       <div class="profile-info">
         <h2>{{user.name}}</h2>
-
         <p class="email">{{user.email}}</p>
-
         <p class="bio">
           {{#if user.bio}} {{user.bio}} {{else}} No bio yet {{/if}}
         </p>
-
         <div class="profile-action">
           {{#if isOwner}}
           <a href="/profile/{{user._id}}/edit" class="btn-profile btn-edit">
             <i class="bi bi-pencil-square"></i>
             Edit Profile
           </a>
-
           {{else}}
-
           <button
             class="btn-profile btn-follow {{#if isFollowing}}active{{/if}}"
             onclick="{{#if isFollowing}}unfollow('{{user._id}}', this){{else}}follow('{{user._id}}', this){{/if}}"
           >
             <i class="bi bi-person-plus-fill"></i>
-
             {{#if isFollowing}} Following {{else}} Follow {{/if}}
           </button>
-
+          <a
+            href="/messages/start/{{user._id}}"
+            class="btn-profile btn-message"
+          >
+            <i class="bi bi-chat-dots"></i>
+            Message
+          </a>
           {{/if}}
         </div>
       </div>
@@ -50,17 +49,14 @@
         <strong>{{stats.total}}</strong>
         <span>Posts</span>
       </div>
-
       <div class="stat">
         <strong>{{stats.followers}}</strong>
         <span>Followers</span>
       </div>
-
       <div class="stat">
         <strong>{{stats.following}}</strong>
         <span>Following</span>
       </div>
-
       <div class="stat">
         <strong>{{stats.done}}</strong>
         <span>Done</span>
@@ -71,37 +67,124 @@
   <!-- POSTS -->
   <section class="profile-posts">
     <div class="section-title">Recent Activity</div>
-
     {{#if posts.length}}
-
     <div class="post-grid">
       {{#each posts}}
-      <a href="/tasks/{{this._id}}" class="post-card">
-        {{#if this.attachments.[0].url}}
-        <img src="{{this.attachments.[0].url}}" alt="{{this.title}}" />
-        {{/if}}
-
-        <div class="post-body">
-          <h4>{{this.title}}</h4>
-
-          {{#if this.description}}
-          <p>{{this.description}}</p>
-          {{/if}}
-
-          <div class="post-meta">
-            <span> {{formatDate this.createdAt}} </span>
-
-            <span class="badge"> {{this.status}} </span>
+      <div class="post-card">
+        <!-- ADMIN DROPDOWN -->
+        {{#ifCond ../viewer.role '===' 'admin'}}
+        <div class="post-dropdown">
+          <button type="button" class="dropdown-trigger">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="post-dropdown-menu">
+            <a href="/tasks/{{_id}}/edit?redirect={{@root.currentUrl}}">
+              <i class="bi bi-pencil"></i>
+              Edit
+            </a>
+            <form action="/tasks/{{_id}}?_method=DELETE" method="POST">
+              <input
+                type="hidden"
+                name="redirectTo"
+                value="{{@root.currentUrl}}"
+              />
+              <button type="submit">
+                <i class="bi bi-trash"></i>
+                Delete
+              </button>
+            </form>
           </div>
         </div>
-      </a>
+        {{/ifCond}}
+
+        <!-- POST LINK -->
+        <a href="/tasks/{{this._id}}" class="post-link">
+          {{#if this.attachments.[0].url}}
+          <img src="{{this.attachments.[0].url}}" alt="{{this.title}}" />
+          {{/if}}
+          <div class="post-body">
+            <h4>{{this.title}}</h4>
+            {{#if this.description}}
+            <p>{{this.description}}</p>
+            {{/if}}
+            <div class="post-meta">
+              <span> {{formatDate deadline}} </span>
+              <span class="badge"> {{this.status}} </span>
+            </div>
+          </div>
+        </a>
+      </div>
       {{/each}}
     </div>
-
     {{else}}
-
     <div class="empty-state">No activity yet</div>
-
     {{/if}}
   </section>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const triggers = document.querySelectorAll('.dropdown-trigger');
+
+    triggers.forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const parent = btn.closest('.post-dropdown');
+        if (!parent) return;
+        document.querySelectorAll('.post-dropdown').forEach(drop => {
+          if (drop !== parent) {
+            drop.classList.remove('active');
+          }
+        });
+        parent.classList.toggle('active');
+      });
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.post-dropdown')) {
+        document.querySelectorAll('.post-dropdown').forEach(drop => {
+          drop.classList.remove('active');
+        });
+      }
+    });
+  });
+
+  async function follow(userId, btn) {
+    btn.disabled = true;
+    try {
+      const res = await fetch(`/api/follow/${userId}`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (data.following) {
+        btn.innerHTML = '<i class="bi bi-check2"></i> Following';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+        btn.onclick = () => unfollow(userId, btn);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    btn.disabled = false;
+  }
+
+  async function unfollow(userId, btn) {
+    btn.disabled = true;
+    try {
+      const res = await fetch(`/api/follow/${userId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!data.following) {
+        btn.innerHTML = '<i class="bi bi-plus-lg"></i> Follow';
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+        btn.onclick = () => follow(userId, btn);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    btn.disabled = false;
+  }
+</script>

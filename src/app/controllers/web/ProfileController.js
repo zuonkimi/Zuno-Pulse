@@ -10,7 +10,10 @@ class ProfileController {
       req.query.keyword,
     );
     if (!data) return res.status(404).send('User not found!');
-    return res.render('pages/profile/show', data);
+    return res.render('pages/profile/show', {
+      ...data,
+      currentUrl: req.originalUrl,
+    });
   }
 
   async edit(req, res, next) {

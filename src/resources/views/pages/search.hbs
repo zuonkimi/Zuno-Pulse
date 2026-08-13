@@ -6,7 +6,6 @@
         <i class="bi bi-people-fill"></i>
         Peoples
       </h3>
-
       {{#if users.length}}
       <div class="list--vertical">
         {{#each users}}
@@ -14,16 +13,13 @@
           <div class="avatar avatar--md">
             <img src="{{this.avatar}}" alt="{{this.name}}" />
           </div>
-
           <div class="user-row__info">
             <div class="user-row__name">{{this.name}}</div>
-
             <div class="user-row__sub">@{{this.username}}</div>
           </div>
         </a>
         {{/each}}
       </div>
-
       {{else}}
       <div class="empty">No people found</div>
       {{/if}}
@@ -35,7 +31,6 @@
         <i class="bi bi-card-checklist"></i>
         Tasks Result
       </h3>
-
       {{#if tasks.length}}
       <div class="list--vertical">
         {{#each tasks}}
@@ -44,20 +39,17 @@
             <i class="bi bi-card-list"></i>
             {{this.title}}
           </a>
-
           {{#if this.author}}
           <div class="task-row__author">
             <div class="avatar avatar--sm">
               <img src="{{this.author.avatar}}" alt="{{this.author.name}}" />
             </div>
-
             <span> {{this.author.name}} </span>
           </div>
           {{/if}}
         </div>
         {{/each}}
       </div>
-
       {{else}}
       <div class="empty">No tasks found</div>
       {{/if}}

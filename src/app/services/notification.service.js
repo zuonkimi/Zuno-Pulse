@@ -14,12 +14,13 @@ class NotificationService {
     });
   }
 
-  async getUserNotifications(userId) {
+  async getUserNotifications(userId, limit = 10) {
     return Notification.find({
       recipient: userId,
     })
       .populate('sender', 'name avatar')
       .sort({ createdAt: -1 })
+      .limit(limit)
       .lean();
   }
 

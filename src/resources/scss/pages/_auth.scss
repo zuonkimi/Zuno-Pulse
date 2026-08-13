@@ -16,7 +16,6 @@
   overflow-x: hidden;
   overflow-y: auto;
   isolation: isolate;
-
   &::before {
     content: '';
     position: absolute;
@@ -28,7 +27,6 @@
     mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
     pointer-events: none;
   }
-
   .auth-main {
     position: relative;
     z-index: 2;
@@ -39,7 +37,6 @@
     padding: clamp(2rem, 5vw, 4rem) 1.25rem;
     overflow-y: auto;
   }
-
   .auth-box {
     width: 100%;
     max-width: 460px;

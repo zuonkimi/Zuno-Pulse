@@ -15,12 +15,13 @@ class AuthController {
       const user = await authService.login(req.body);
       req.session.regenerate(err => {
         if (err) return next(err);
-        req.session.userId = user._id;
+        req.session.userId = user._id.toString();
         req.session.email = user.email;
-        return res.redirect('/home');
+        req.session.role = user.role;
+        res.redirect('/home');
       });
     } catch (err) {
-      return res.render('pages/auth/login', {
+      res.render('pages/auth/login', {
         layout: 'auth',
         error: err.message,
       });
@@ -51,11 +52,10 @@ class AuthController {
   }
 
   // LOGOUT
-  logout(req, res, next) {
-    req.session.destroy(err => {
-      if (err) return next(err);
+  logout(req, res) {
+    req.session.destroy(() => {
       res.clearCookie('connect.sid');
-      return res.redirect('/auth/login');
+      res.redirect('/auth/login');
     });
   }
 

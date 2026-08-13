@@ -4,6 +4,7 @@
       <h2>Welcome Back</h2>
       <p>Sign in to continue your productivity journey</p>
     </div>
+
     <form method="POST" action="/auth/login">
       <input type="hidden" name="_csrf" value="{{csrfToken}}" />
       <div class="input-box">
@@ -27,6 +28,7 @@
     <p class="forgot-password">
       <a href="/auth/forgot-password">Forgot password?</a>
     </p>
+
     <div class="social-submit">
       <a href="/auth/google" class="btn-social"><i class="bi bi-google"></i></a>
       <a href="/auth/facebook" class="btn-social"

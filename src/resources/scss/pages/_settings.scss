@@ -211,12 +211,10 @@
   height: 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
-
   &:first-child {
     width: 75%;
     margin-bottom: 6px;
   }
-
   &.small {
     width: 45%;
   }
@@ -549,56 +547,40 @@
 /* GLOW */
 .settings-password-card::before {
   content: '';
-
   position: absolute;
-
   inset: 0;
-
   background: radial-gradient(
     circle at top right,
     color-mix(in srgb, var(--primary) 18%, transparent),
     transparent 40%
   );
-
   pointer-events: none;
 }
 
 /* TOP */
 .settings-password-top {
   position: relative;
-
   z-index: 2;
-
   display: flex;
   align-items: center;
-
   margin-bottom: $spacing-xl;
 }
 
 /* HEADER */
 .settings-password-header {
   position: relative;
-
   z-index: 2;
-
   margin-bottom: $spacing-xl;
-
   h3 {
     margin: 0 0 8px;
-
     font-size: 28px;
     font-weight: 700;
-
     color: var(--text);
   }
-
   p {
     margin: 0;
-
     color: var(--muted);
-
     font-size: 14px;
-
     line-height: 1.6;
   }
 }
@@ -606,45 +588,32 @@
 /* ALERT */
 .alert {
   position: relative;
-
   z-index: 2;
-
   padding: 14px 16px;
-
   border-radius: $radius-md;
-
   margin-bottom: $spacing-lg;
-
   border: 1px solid transparent;
-
   font-size: 14px;
 }
 
 .alert-success {
   background: rgba(34, 197, 94, 0.12);
-
   border-color: rgba(34, 197, 94, 0.24);
-
   color: #4ade80;
 }
 
 .alert-danger {
   background: rgba(239, 68, 68, 0.12);
-
   border-color: rgba(239, 68, 68, 0.24);
-
   color: #fb7185;
 }
 
 /* FORM */
 .settings-password-form {
   position: relative;
-
   z-index: 2;
-
   display: flex;
   flex-direction: column;
-
   gap: $spacing-lg;
 }
 
@@ -652,14 +621,12 @@
 .password-field {
   display: flex;
   flex-direction: column;
-
   gap: 8px;
 }
 
 .password-field label {
   font-size: 14px;
   font-weight: 600;
-
   color: var(--text);
 }
 
@@ -670,37 +637,24 @@
 
 .password-input-icon {
   position: absolute;
-
   top: 50%;
   left: 16px;
-
   transform: translateY(-50%);
-
   font-size: 15px;
-
   color: var(--muted);
-
   pointer-events: none;
 }
 
 /* INPUT */
 .password-input {
   width: 100%;
-
   min-height: 56px;
-
   padding: 0 52px 0 48px;
-
   border-radius: $radius-lg;
-
   border: 1px solid var(--border);
-
   background: color-mix(in srgb, var(--card) 88%, transparent);
-
   color: var(--text);
-
   font-size: 15px;
-
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -713,63 +667,44 @@
 
 .password-input:focus {
   outline: none;
-
   border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
-
   background: color-mix(in srgb, var(--card) 95%, transparent);
-
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 /* TOGGLE */
 .password-toggle {
   position: absolute;
-
   top: 50%;
   right: 14px;
-
   transform: translateY(-50%);
-
   width: 34px;
   height: 34px;
-
   border: none;
-
   border-radius: 10px;
-
   background: transparent;
-
   color: var(--muted);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   transition:
     background 0.2s ease,
     color 0.2s ease;
-
   cursor: pointer;
 }
 
 .password-toggle:hover {
   background: color-mix(in srgb, var(--primary) 10%, transparent);
-
   color: var(--primary);
 }
 
 /* SAVE BUTTON */
 .password-save-btn {
   width: 100%;
-
   min-height: 56px;
-
   margin-top: 8px;
-
   border: none;
-
   border-radius: $radius-lg;
-
   background: linear-gradient(
     135deg,
     var(--primary),
@@ -777,28 +712,23 @@
   );
 
   color: white;
-
   font-size: 15px;
   font-weight: 700;
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
     opacity 0.2s ease;
-
   cursor: pointer;
 }
 
 .password-save-btn:hover {
   transform: translateY(-2px);
-
   box-shadow: 0 14px 30px color-mix(in srgb, var(--primary) 26%, transparent);
 }
 
 /* BACK BUTTON */
 .settings-password-top .btn {
   min-height: 42px;
-
   border-radius: $radius-md;
 }
 
@@ -826,10 +756,8 @@
     min-height: 54px;
   }
 }
-/* =========================
-   CONNECTED ACCOUNTS PAGE
-========================= */
 
+//  CONNECTED ACCOUNTS PAGE
 .connected-page {
   width: 100%;
   max-width: 1100px;

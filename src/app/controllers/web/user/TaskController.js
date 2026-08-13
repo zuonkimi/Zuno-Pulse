@@ -1,6 +1,6 @@
-const taskService = require('../../services/task.service');
-const commentService = require('../../services/comment.service');
-const { buildAttachments } = require('../../utils/fileHelpers');
+const taskService = require('../../../services/task.service');
+const commentService = require('../../../services/comment.service');
+const { buildAttachments } = require('../../../utils/fileHelpers');
 
 class TaskController {
   async index(req, res, next) {
@@ -14,13 +14,13 @@ class TaskController {
         activeFilter: result.filters,
         pagination: result.pagination,
         currentUrl: req.originalUrl,
+        isUserTasks: true,
       });
     } catch (err) {
       next(err);
     }
   }
 
-  // Like Task
   async toggleLike(req, res, next) {
     try {
       const result = await taskService.toggleLike(
@@ -33,7 +33,6 @@ class TaskController {
     }
   }
 
-  // Trang tạo Task
   async create(req, res, next) {
     try {
       const result = await taskService.getHomePageData(req.session.userId);
@@ -45,7 +44,6 @@ class TaskController {
     }
   }
 
-  // Lưu Task mới
   async store(req, res, next) {
     try {
       const data = req.validatedBody || req.body;
@@ -64,40 +62,61 @@ class TaskController {
     }
   }
 
-  // Xóa mềm (vào thùng rác)
   async delete(req, res, next) {
     try {
-      await taskService.deleteTask(req.params.id, req.session.userId, true);
-      return res.redirect('/tasks');
+      await taskService.deleteTask(
+        req.params.id,
+        req.session.userId,
+        true,
+        req.user,
+      );
+      return res.redirect(req.body.redirectTo || '/tasks');
     } catch (err) {
       next(err);
     }
   }
 
-  // Khôi phục từ thùng rác
   async restore(req, res, next) {
     try {
-      await taskService.restoreTask(req.params.id, req.session.userId);
-      return res.redirect('pages/me/trash-tasks');
+      await taskService.restoreTask(
+        req.params.id,
+        req.session.userId,
+        req.user,
+      );
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.json({ success: true });
+      }
+      return res.redirect('/me/trash-tasks');
     } catch (err) {
       next(err);
     }
   }
 
-  // Xóa vĩnh viễn
   async forceDelete(req, res, next) {
     try {
-      await taskService.deleteTask(req.params.id, req.session.userId, false);
-      return res.redirect('pages/me/trash-tasks');
+      await taskService.deleteTask(
+        req.params.id,
+        req.session.userId,
+        false,
+        req.user,
+      );
+      const redirectTo = req.query.redirect || '/tasks';
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.json({ success: true });
+      }
+      return res.redirect(redirectTo);
     } catch (err) {
       next(err);
     }
   }
 
-  // Đổi trạng thái Done/Pending
   async updateStatus(req, res, next) {
     try {
-      await taskService.toggleStatus(req.params.id, req.session.userId);
+      await taskService.toggleStatus(
+        req.params.id,
+        req.session.userId,
+        req.user,
+      );
       const redirectUrl = req.get('Referer') || '/tasks';
       return res.redirect(redirectUrl);
     } catch (err) {
@@ -105,7 +124,6 @@ class TaskController {
     }
   }
 
-  // Trang chỉnh sửa
   async edit(req, res, next) {
     try {
       const task = await taskService.getDetail(
@@ -115,14 +133,13 @@ class TaskController {
       if (!task) return res.status(404).send('Task not found');
       return res.render('pages/tasks/edit', {
         task,
-        redirectTo: '/tasks',
+        redirectTo: req.query.redirect || '/tasks',
       });
     } catch (err) {
       next(err);
     }
   }
 
-  // Cập nhật Task
   async updateTask(req, res, next) {
     try {
       const data = req.body;
@@ -140,14 +157,28 @@ class TaskController {
         req.params.id,
         req.session.userId,
         updateData,
+        req.user,
       );
-      return res.redirect('/tasks');
+      return res.redirect(req.body.redirectTo || '/tasks');
     } catch (err) {
       next(err);
     }
   }
 
-  // Xem chi tiết Task và Comment
+  async trashTasks(req, res, next) {
+    try {
+      const result = await taskService.getTrash(req.session.userId);
+      return res.render('pages/tasks/trash-list', {
+        tasks: result.tasks,
+        isEmpty: result.isEmpty,
+        stats: result.stats,
+        isUserTrash: true,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async showDetail(req, res, next) {
     try {
       const task = await taskService.getDetail(

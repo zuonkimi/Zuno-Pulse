@@ -50,6 +50,7 @@ class SiteController {
         emptyMessage:
           result.tasks.length === 0 ? 'Bạn chưa có công việc nào' : '',
         userId: req.session.userId,
+        isHome: true,
       });
     } catch (err) {
       next(err);

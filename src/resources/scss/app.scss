@@ -22,13 +22,17 @@
 @import 'components/form';
 
 @import 'pages/auth';
-@import 'pages/dashboard';
+@import 'pages/role/admin';
+@import 'pages/role/users';
+@import 'pages/task/task-trash';
+@import 'pages/task/task-edit-create';
+@import 'pages/task/task-list';
+@import 'pages/task/task-detail';
 @import 'pages/landing';
 @import 'pages/footer';
-@import 'pages/task-content';
-@import 'pages/task-list';
+@import 'pages/feed';
 @import 'pages/profile';
-@import 'pages/users';
-@import 'pages/task-detail';
 @import 'pages/notifications';
-@import 'pages/settings.scss';
+@import 'pages/settings';
+@import 'pages/features/messages';
+@import 'pages/features/chat-popup';

@@ -1,0 +1,114 @@
+.task-page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: $spacing-2xl;
+  border-radius: $radius-xl;
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.3s ease;
+  color: var(--text);
+}
+
+/* HEADER */
+.task-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 26px;
+    font-weight: 700;
+  }
+}
+
+/* FORM CHUNG */
+.task-page-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+/* INPUT CHUNG */
+.task-page .form-control,
+.task-page textarea,
+.task-page select,
+.task-page input[type='date'],
+.task-page input[type='text'] {
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: $radius-md;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--text);
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+/* TEXTAREA */
+.task-page textarea {
+  min-height: 140px;
+  padding: 14px 16px;
+  resize: vertical;
+}
+
+/* FOCUS */
+.task-page .form-control:focus,
+.task-page textarea:focus,
+.task-page select:focus {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+/* FILE */
+.task-page input[type='file'] {
+  padding: 12px;
+}
+
+/* PREVIEW */
+.task-page .preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* BUTTON PRIMARY */
+.task-page .btn-primary {
+  min-height: 54px;
+  border-radius: $radius-lg;
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    color-mix(in srgb, var(--primary) 70%, #000)
+  );
+  font-weight: 700;
+  color: #fff;
+  transition: 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* OUTLINE BUTTON */
+.task-page .btn-outline-secondary {
+  border-radius: $radius-pill;
+}
+
+/* RESPONSIVE */
+@include respond(md) {
+  .task-page {
+    padding: $spacing-lg;
+  }
+
+  .task-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,47 +1,79 @@
 :root {
-  // BACKGROUND
+  /* BACKGROUND */
   --bg: #f3f6fb;
   --bg-secondary: #e8eef5;
-  // CARD
+
+  /* CARD */
   --card: #ffffff;
   --card-hover: #f8fafc;
-  // TEXT
+
+  /* TEXT */
   --text: #0f172a;
   --text-secondary: #334155;
   --muted: #64748b;
-  // BRAND
+
+  /* BRAND */
   --primary: #00c6ff;
   --primary-dark: #0072ff;
-  // UI
+
+  /* STATUS */
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --secondary: #64748b;
+
+  /* UI */
   --border: #dbe4ee;
   --input-bg: #ffffff;
-  // EFFECT
+
+  /* EFFECT */
   --shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-  // HOVER
-  --hover: rgba(0, 0, 0, 0.04);
+
+  /* HOVER */
+  --hover: rgba(15, 23, 42, 0.04);
+
+  --message-active: rgba(0, 198, 255, 0.14);
+  --message-unread: rgba(15, 23, 42, 0.06);
+  --message-hover: rgba(15, 23, 42, 0.04);
 }
 
 [data-theme='dark'] {
-  // BACKGROUND
+  /* BACKGROUND */
   --bg: #0f172a;
   --bg-secondary: #111827;
-  // CARD
+
+  /* CARD */
   --card: #1e293b;
   --card-hover: #273449;
-  // TEXT
+
+  /* TEXT */
   --text: #f8fafc;
   --text-secondary: #cbd5e1;
   --muted: #94a3b8;
-  // BRAND
+
+  /* BRAND */
   --primary: #00c6ff;
   --primary-dark: #0072ff;
-  // UI
+
+  /* STATUS */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --secondary: #94a3b8;
+
+  /* UI */
   --border: rgba(255, 255, 255, 0.08);
   --input-bg: #1e293b;
-  // EFFECT
+
+  /* EFFECT */
   --shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  // HOVER
+
+  /* HOVER */
   --hover: rgba(255, 255, 255, 0.06);
+
+  --message-active: rgba(0, 198, 255, 0.18);
+  --message-unread: rgba(255, 255, 255, 0.04);
+  --message-hover: rgba(255, 255, 255, 0.05);
 }
 
 .theme-card {

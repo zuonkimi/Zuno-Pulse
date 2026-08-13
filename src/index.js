@@ -13,9 +13,14 @@ const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
 // create server to control app
 const app = express();
+const http = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+const chatSocket = require('./config/chat.socket');
+const io = new Server(server);
 // connect to database
 const db = require('./config/db');
-const User = require('./app/models/User');
+const currentUserMiddleware = require('./app/middlewares/currentUser');
 // handle path to static files and views
 const path = require('path');
 // set up all routes for app
@@ -27,6 +32,8 @@ const cookieParser = require('cookie-parser');
 const sessionConfig = require('./config/session');
 // get environment const (process.env is env saved)
 const port = process.env.PORT || 9999;
+chatSocket(io);
+app.set('io', io);
 // read date from form (convert object type)
 app.use(express.urlencoded({ extended: true }));
 // read json data
@@ -44,21 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 // create session ID -> save session in server -> send cookie with session ID to browser -> browser send cookie -> server find session by ID in cookie -> get session data
 app.use(session(sessionConfig));
-
-app.use(async (req, res, next) => {
-  try {
-    if (req.session.userId) {
-      const user = await User.findById(req.session.userId).lean();
-      res.locals.currentUser = user;
-    } else {
-      res.locals.currentUser = null;
-    }
-  } catch (err) {
-    res.locals.currentUser = null;
-  }
-  next();
-});
-
+app.use(currentUserMiddleware);
 //View engine, set up handlebars -> hbs and has helpers
 app.engine(
   'hbs',
@@ -79,6 +72,6 @@ db.connect().then(() => {
   // start server
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server chạy tại port ${port}`);
 });

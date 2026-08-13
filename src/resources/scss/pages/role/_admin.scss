@@ -1,0 +1,170 @@
+.admin-page {
+  padding: $spacing-xl;
+
+  .card {
+    border-radius: $radius-lg;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .page-header {
+    margin-bottom: $spacing-xl;
+    h2 {
+      margin: 0;
+      font-weight: 700;
+      color: var(--text);
+    }
+    p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  }
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  th {
+    padding: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 14px;
+    vertical-align: middle;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  tbody {
+    tr {
+      transition: $transition-fast;
+      &:hover {
+        background: color-mix(in srgb, var(--primary) 5%, var(--card));
+      }
+    }
+  }
+}
+
+.admin-action-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: nowrap;
+  form {
+    margin: 0;
+  }
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: $radius-pill;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-success {
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+}
+
+.badge-danger {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.badge-warning {
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  color: var(--warning);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+}
+
+.badge-secondary {
+  background: color-mix(in srgb, var(--secondary) 12%, transparent);
+  color: var(--secondary);
+  border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+}
+
+.admin-filter-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  min-width: 220px;
+  height: 48px;
+  padding: 0 $spacing-md;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: $radius-lg;
+  transition: $transition-fast;
+  &:focus-within {
+    border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+    box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.12);
+  }
+  i {
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  input,
+  select {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    &::placeholder {
+      color: var(--muted);
+    }
+  }
+
+  select {
+    cursor: pointer;
+    option {
+      background: var(--card);
+      color: var(--text);
+    }
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.admin-filter {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: nowrap;
+}
+
+.user-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+@media (max-width: $breakpoint-md) {
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

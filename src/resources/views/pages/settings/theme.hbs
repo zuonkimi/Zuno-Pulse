@@ -1,32 +1,28 @@
 <div class="theme-page">
-
   <!-- HEADER -->
   <div class="theme-header">
     <div>
-      <h2>🎨 Appearance</h2>
+      <h2>Appearance</h2>
       <p>
         Customize the look and feel of your workspace
       </p>
     </div>
-
     <a
       href="/settings"
       class="theme-back-btn"
     >
       <i class="bi bi-arrow-left"></i>
-      Back to Settings
+      Back
     </a>
   </div>
 
   <!-- CARD -->
   <div class="theme-card">
-
     {{#if success}}
       <div class="alert alert-success">
         {{success}}
       </div>
     {{/if}}
-
     {{#if error}}
       <div class="alert alert-danger">
         {{error}}
@@ -38,16 +34,13 @@
       method="POST"
       id="themeForm"
     >
-
       <input
         type="hidden"
         name="_csrf"
         value="{{csrfToken}}"
       />
-
       <!-- THEME MODE -->
       <div class="theme-section">
-
         <div class="theme-section-top">
           <div>
             <h5>Theme Mode</h5>
@@ -56,39 +49,32 @@
             </p>
           </div>
         </div>
-
         <select
           name="theme"
           class="theme-select"
         >
-
           <option
             value="system"
             {{#if (eq user.theme "system")}}selected{{/if}}
           >
             System (Follow OS)
           </option>
-
           <option
             value="light"
             {{#if (eq user.theme "light")}}selected{{/if}}
           >
             Light
           </option>
-
           <option
             value="dark"
             {{#if (eq user.theme "dark")}}selected{{/if}}
           >
             Dark
           </option>
-
         </select>
       </div>
-
       <!-- ACCENT -->
       <div class="theme-section">
-
         <div class="theme-section-top">
           <div>
             <h5>Accent Color</h5>
@@ -97,9 +83,7 @@
             </p>
           </div>
         </div>
-
         <div class="color-picker-wrap">
-
           <input
             id="accentColor"
             type="color"
@@ -107,14 +91,11 @@
             class="theme-color-input"
             value="{{#if user.accentColor}}{{user.accentColor}}{{else}}#00c6ff{{/if}}"
           />
-
           <div class="color-preview">
-
             <span
               class="color-dot"
               id="colorDot"
             ></span>
-
             <span id="colorText">
               {{#if user.accentColor}}
                 {{user.accentColor}}
@@ -122,15 +103,11 @@
                 #00c6ff
               {{/if}}
             </span>
-
           </div>
-
         </div>
       </div>
-
       <!-- LIVE PREVIEW -->
       <div class="theme-section">
-
         <div class="theme-section-top">
           <div>
             <h5>Live Preview</h5>
@@ -140,87 +117,61 @@
             </p>
           </div>
         </div>
-
         <div class="theme-preview">
-
           <!-- CARD -->
           <div class="preview-card">
-
             <div class="preview-top">
-
               <div class="preview-avatar"></div>
-
               <div class="preview-lines">
                 <div class="preview-line"></div>
                 <div class="preview-line small"></div>
               </div>
-
             </div>
 
             <div class="preview-content"></div>
-
             <button
               type="button"
               class="preview-button"
             >
               Continue
             </button>
-
           </div>
-
           <!-- CARD -->
           <div class="preview-card">
-
             <div class="preview-top">
-
               <div class="preview-avatar"></div>
-
               <div class="preview-lines">
                 <div class="preview-line"></div>
                 <div class="preview-line small"></div>
               </div>
-
             </div>
-
             <div class="preview-content"></div>
-
             <button
               type="button"
               class="preview-button"
             >
               Save Changes
             </button>
-
           </div>
-
           <!-- CARD -->
           <div class="preview-card">
-
             <div class="preview-top">
-
               <div class="preview-avatar"></div>
-
               <div class="preview-lines">
                 <div class="preview-line"></div>
                 <div class="preview-line small"></div>
               </div>
-
             </div>
-
             <div class="preview-content"></div>
-
             <button
               type="button"
               class="preview-button"
             >
               Open
             </button>
-
           </div>
-
         </div>
       </div>
-
       <!-- SAVE -->
       <button
         type="submit"
@@ -229,9 +180,7 @@
         <i class="bi bi-check2-circle"></i>
         Save Changes
       </button>
-
     </form>
-
   </div>
 </div>
 
@@ -304,26 +253,21 @@
         B = parseInt(
           (B * (100 + percent)) / 100,
         );
-
         R = R < 255 ? R : 255;
         G = G < 255 ? G : 255;
         B = B < 255 ? B : 255;
-
         const RR =
           R.toString(16).length === 1
             ? '0' + R.toString(16)
             : R.toString(16);
-
         const GG =
           G.toString(16).length === 1
             ? '0' + G.toString(16)
             : G.toString(16);
-
         const BB =
           B.toString(16).length === 1
             ? '0' + B.toString(16)
             : B.toString(16);
-
         return '#' + RR + GG + BB;
       }
 
@@ -361,16 +305,13 @@
         previewContents.forEach(el => {
           el.style.background =
             contentBg;
-
           el.style.borderColor =
             borderColor;
         });
-
         previewLines.forEach(line => {
           line.style.background =
             lineBg;
         });
-
         // avatar
         document
           .querySelectorAll(
@@ -380,7 +321,6 @@
             el.style.background =
               color;
           });
-
         // button
         document
           .querySelectorAll(
@@ -394,7 +334,6 @@
                 ${shadeColor(color, -20)}
               )
             `;
-
             el.style.color = '#fff';
           });
       }
@@ -402,38 +341,30 @@
       function updateAll() {
         const color =
           colorInput.value;
-
         const theme =
           themeSelect.value;
-
         document.documentElement.style.setProperty(
           '--primary',
           color,
         );
-
         colorDot.style.background =
           color;
-
         colorText.textContent = color;
-
         applyPreviewTheme(
           theme,
           color,
         );
       }
-
       // realtime color
       colorInput?.addEventListener(
         'input',
         updateAll,
       );
-
       // realtime theme mode
       themeSelect?.addEventListener(
         'change',
         updateAll,
       );
-
       // init
       updateAll();
     },

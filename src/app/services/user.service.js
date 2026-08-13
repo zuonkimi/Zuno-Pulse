@@ -16,6 +16,7 @@ class UserService {
   async getProfilePage(viewerId, profileUserId, keyword) {
     const user = await User.findById(profileUserId).lean();
     if (!user) return null;
+    const viewer = await User.findById(viewerId).lean();
     // Lấy tasks của profile
     const tasksData = await taskService.getTasksPage(
       profileUserId,
@@ -34,6 +35,10 @@ class UserService {
     });
     return {
       user,
+      viewer: {
+        _id: viewer?._id,
+        role: viewer?.role,
+      },
       posts: tasksData.tasks,
       isFollowing: !!isFollowing,
       isOwner: String(viewerId) === String(profileUserId),

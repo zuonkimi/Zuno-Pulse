@@ -5,13 +5,16 @@ const notificationMiddleware = async (req, res, next) => {
     if (!req.session.userId) {
       return next();
     }
+    console.time('notificationMiddleware');
     const notifications = await notificationService.getUserNotifications(
       req.session.userId,
+      10,
     );
+    console.timeEnd('notificationMiddleware');
     const unreadCount = await notificationService.getUnreadCount(
       req.session.userId,
     );
-    res.locals.notifications = notifications.slice(0, 10);
+    res.locals.notifications = notifications;
     res.locals.unreadCount = unreadCount;
     next();
   } catch (err) {

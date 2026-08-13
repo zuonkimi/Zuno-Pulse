@@ -21,6 +21,8 @@ const NotificationSchema = new Schema(
         'new_task',
         'like_task',
         'like_comment',
+        'role',
+        'ban',
       ],
       required: true,
     },

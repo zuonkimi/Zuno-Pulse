@@ -1,0 +1,15 @@
+.messages-page {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+.conversation-list {
+  width: 320px;
+  border-right: 1px solid #ddd;
+}
+
+.chat-detail {
+  flex: 1;
+}
+
+/*# sourceMappingURL=messages.css.map */

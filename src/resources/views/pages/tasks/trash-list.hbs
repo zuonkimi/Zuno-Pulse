@@ -1,0 +1,194 @@
+<div class="task-trash-page">
+  <!-- HEADER -->
+  <div
+    class="task-trash-header page-header d-flex justify-content-between align-items-center mb-4"
+  >
+    <div>
+      <h2 class="mb-1">Trash Tasks</h2>
+      <p class="text-muted mb-0">Deleted tasks</p>
+    </div>
+    <button class="btn btn-outline-secondary" onclick="goBackPrevPage()">
+      Back
+    </button>
+  </div>
+
+  <!-- TABLE CARD -->
+  <div class="card task-trash-card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table task-trash-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Deleted At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="trashTableBody">
+            {{#if tasks.length}} {{#each tasks}}
+            <tr data-task-id="{{_id}}">
+              <td>
+                <div class="task-trash-title">{{title}}</div>
+                {{#if description}}
+                <div class="task-trash-desc text-muted">{{description}}</div>
+                {{/if}}
+              </td>
+              <td>{{formatDate updatedAt}}</td>
+              <td>
+                <div class="task-trash-action-group">
+                  <button
+                    class="btn btn-sm btn-success"
+                    onclick="restoreTask('{{_id}}')"
+                  >
+                    Restore
+                  </button>
+
+                  <button
+                    class="btn btn-sm btn-danger"
+                    data-id="{{_id}}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteModal"
+                  >
+                    Delete Forever
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {{/each}} {{/if}}
+          </tbody>
+        </table>
+      </div>
+      <!-- EMPTY STATE -->
+      <div
+        id="emptyState"
+        class="text-center py-5 text-muted"
+        style="display: none"
+      >
+        <div>
+          <i class="bi bi-trash3 display-5"></i>
+          <h5 class="mt-3">Thùng rác trống</h5>
+          <p>Không có task nào đã bị xóa</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to permanently delete this task?
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const deleteModal = document.getElementById('deleteModal');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+  let deleteId = null;
+
+  // GET ID FROM MODAL
+  deleteModal?.addEventListener('show.bs.modal', event => {
+    deleteId = event.relatedTarget?.getAttribute('data-id') || null;
+  });
+
+  // FORCE DELETE
+  confirmDeleteBtn?.addEventListener('click', async () => {
+    if (!deleteId) return;
+    confirmDeleteBtn.disabled = true;
+    try {
+      const res = await fetch(`/tasks/${deleteId}/force`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Delete failed');
+      }
+      removeTask(deleteId);
+      bootstrap.Modal.getInstance(deleteModal)?.hide();
+    } catch (err) {
+      console.error(err);
+      alert('Delete failed');
+    } finally {
+      confirmDeleteBtn.disabled = false;
+      deleteId = null;
+    }
+  });
+
+  //RESTORE
+  window.restoreTask = async id => {
+    const btn = document.querySelector(
+      `button[onclick*="restoreTask('${id}')"]`,
+    );
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch(`/tasks/${id}/restore`, {
+        method: 'PATCH',
+        headers: { Accept: 'application/json' },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Restore failed');
+      }
+      removeTask(id);
+    } catch (err) {
+      console.error(err);
+      alert('Restore failed');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  };
+
+  //REMOVE + EMPTY STATE
+  function removeTask(id) {
+    const row = document.querySelector(`[data-task-id="${id}"]`);
+    if (row) row.remove();
+    updateEmptyState();
+  }
+
+  function updateEmptyState() {
+    const rows = document.querySelectorAll('[data-task-id]');
+    const table = document.querySelector('.task-trash-table');
+    const empty = document.getElementById('emptyState');
+    if (rows.length === 0) {
+      table.style.display = 'none';
+      empty.style.display = 'block';
+    } else {
+      table.style.display = '';
+      empty.style.display = 'none';
+    }
+  }
+
+  // BACK BUTTON
+  window.goBackPrevPage = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/tasks';
+    }
+  };
+
+  /* INIT */
+  updateEmptyState();
+</script>

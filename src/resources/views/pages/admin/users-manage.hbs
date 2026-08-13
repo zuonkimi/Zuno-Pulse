@@ -1,0 +1,126 @@
+<div class="admin-page">
+  <div
+    class="page-header d-flex justify-content-between align-items-center mb-4"
+  >
+    <div>
+      <h2 class="mb-1">Manage Users</h2>
+
+      <p class="text-muted mb-0">Manage roles, bans and users</p>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table admin-table">
+          <thead class="table-light">
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {{#if users.length}} {{#each users}}
+            <tr>
+              <!-- USER -->
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <a href="/profile/{{this._id}}" class="text-decoration-none">
+                    {{#if this.avatar}}
+                    <img
+                      src="{{this.avatar}}"
+                      alt="{{this.name}}"
+                      class="rounded-circle object-fit-cover"
+                      width="46"
+                      height="46"
+                    />
+                  </a>
+                  {{else}}
+                  <div class="avatar-fallback">{{this.name.[0]}}</div>
+                  {{/if}}
+                  <div>
+                    <div class="fw-semibold">{{this.name}}</div>
+                    {{#if this.username}}
+                    <div class="text-muted small">&#64;{{this.username}}</div>
+                    {{/if}}
+                  </div>
+                </div>
+              </td>
+              <!-- EMAIL -->
+              <td>{{this.email}}</td>
+              <!-- ROLE -->
+              <td>
+                {{#ifCond this.role '===' 'admin'}}
+                <span class="admin-badge badge-danger"> Admin </span>
+                {{else}}
+                <span class="admin-badge badge-secondary"> User </span>
+                {{/ifCond}}
+              </td>
+              <!-- STATUS -->
+              <td>
+                {{#if this.isBanned}}
+                <span class="admin-badge badge-danger"> Banned </span>
+                {{else}}
+                <span class="admin-badge badge-success"> Active </span>
+                {{/if}}
+              </td>
+              <!-- ACTIONS -->
+              <td>
+                {{#unless (eq this._id ../currentUserId)}}
+                <div class="admin-action-group">
+                  <!-- ROLE -->
+                  <form
+                    action="/admin/users/{{this._id}}/role?_method=PATCH"
+                    method="POST"
+                  >
+                    <button class="btn btn-sm btn-dark" type="submit">
+                      Toggle Role
+                    </button>
+                  </form>
+                  <!-- BAN -->
+                  <form
+                    action="/admin/users/{{this._id}}/ban?_method=PATCH"
+                    method="POST"
+                  >
+                    {{#if this.isBanned}}
+                    <button class="btn btn-sm btn-warning" type="submit">
+                      Unban
+                    </button>
+                    {{else}}
+                    <button class="btn btn-sm btn-warning" type="submit">
+                      Ban
+                    </button>
+                    {{/if}}
+                  </form>
+                  <!-- DELETE -->
+                  <form
+                    action="/admin/users/{{this._id}}?_method=DELETE"
+                    method="POST"
+                  >
+                    <button class="btn btn-sm btn-danger" type="submit">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+                {{else}}
+                <span class="text-muted"></span>
+                {{/unless}}
+              </td>
+            </tr>
+            {{/each}} {{else}}
+            <tr>
+              <td colspan="5" class="text-center py-5">
+                <div class="text-muted">No users found</div>
+              </td>
+            </tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

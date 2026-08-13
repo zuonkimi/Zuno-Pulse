@@ -1,13 +1,14 @@
 .card {
-  padding: $spacing-lg;
-  border-radius: $radius-pill;
-  background: $bg-card;
-  box-shadow: $shadow-sm;
-  font-weight: 500;
-  @include smooth;
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: $shadow-md;
+  &.ui-card {
+    padding: $spacing-lg;
+    border-radius: $radius-pill;
+    background: $bg-card;
+    box-shadow: $shadow-sm;
+    @include smooth;
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-md;
+    }
   }
 }
 

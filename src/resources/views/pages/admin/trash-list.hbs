@@ -1,0 +1,73 @@
+<div class="admin-page">
+  <div
+    class="page-header d-flex justify-content-between align-items-center mb-4"
+  >
+    <div>
+      <h2 class="mb-1">Trash Tasks</h2>
+      <p class="text-muted mb-0">Deleted tasks from all users</p>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Task</th>
+              <th>Deleted At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {{#if tasks.length}} {{#each tasks}}
+            <tr>
+              <td>
+                <div class="fw-semibold user-name">{{author.name}}</div>
+              </td>
+              <td>
+                <div class="task-title">{{title}}</div>
+              </td>
+              <td>{{formatDate updatedAt}}</td>
+
+              <td>
+                <div class="admin-action-group">
+                  <!-- RESTORE -->
+                  <form method="POST" action="/admin/tasks/{{_id}}/restore">
+                    <button type="submit" class="btn btn-sm btn-success">
+                      Restore
+                    </button>
+                  </form>
+
+                  <!-- FORCE DELETE -->
+                  <form
+                    method="POST"
+                    action="/admin/tasks/{{_id}}/force"
+                    onsubmit="
+                      return confirm(
+                        'Are you sure you want to permanently delete this task?',
+                      );
+                    "
+                  >
+                    <button type="submit" class="btn btn-sm btn-danger">
+                      Delete Forever
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {{/each}} {{else}}
+            <tr>
+              <td colspan="4" class="text-center py-5">
+                <div class="text-muted">No deleted tasks found</div>
+              </td>
+            </tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+/* PAGE */
+.task-trash-page {
+  padding: $spacing-xl;
+}
+
+/* CARD */
+.task-trash-card {
+  border-radius: $radius-lg;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+/* TABLE */
+.task-trash-table {
+  width: 100%;
+  border-collapse: collapse;
+  th {
+    padding: 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background: color-mix(in srgb, var(--primary) 5%, var(--card));
+  }
+}
+
+/* TITLE */
+.task-trash-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* DESC */
+.task-trash-desc {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* ACTIONS */
+.task-trash-action-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* EMPTY */
+.task-trash-empty {
+  padding: 60px;
+  text-align: center;
+  color: var(--muted);
+}
