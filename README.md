@@ -150,13 +150,13 @@ The project was built as a practical foundation for developing internal business
 ### Notifications
 
 <p align="center">
-  <img src="./docs/images/notifications page.png" width="900">
+  <img src="./docs/images/notifications-page.png" width="900">
 </p>
 
 ### Home
 
 <p align="center">
-  <img src="./docs/images/home page.png" width="900">
+  <img src="./docs/images/home-page.png" width="900">
 </p>
 
 ---
