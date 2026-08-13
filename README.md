@@ -76,7 +76,88 @@ The project was built as a practical foundation for developing internal business
 
 ## Product Preview
 
-> Screenshots and product demonstrations will be added here.
+### Landing Page
+
+<p align="center">
+  <img src="./docs/images/landing-page.png" width="900">
+</p>
+
+---
+
+### Authentication & Account Management
+
+<div align="center">
+
+<img src="./docs/images/auth_register-page.png" width="48%">
+<img src="./docs/images/auth_login-page.png" width="48%">
+
+</div>
+
+---
+
+### Administration
+
+<div align="center">
+
+<img src="./docs/images/admin-page.jpg" width="48%">
+<img src="./docs/images/admin-page (2).jpg" width="48%">
+
+</div>
+
+---
+
+### User Profile
+
+<div align="center">
+
+<img src="./docs/images/profile-page.png" width="48%">
+<img src="./docs/images/profile-page (2).png" width="48%">
+
+</div>
+
+---
+
+### Settings & Personalization
+
+<div align="center">
+
+<img src="./docs/images/settings-page.png" width="48%">
+<img src="./docs/images/theme_setting-page.jpg" width="48%">
+
+</div>
+
+---
+
+### Real-time Messaging
+
+<div align="center">
+
+<img src="./docs/images/messages-page.png" width="48%">
+
+</div>
+
+---
+
+### Task Management
+
+<div align="center">
+
+<img src="./docs/images/tasks_create-page.png" width="48%">
+<img src="./docs/images/tasks_trash-list-page.png" width="48%">
+
+</div>
+
+### Notifications
+
+<p align="center">
+  <img src="./docs/images/notifications page.png" width="900">
+</p>
+
+### Home
+
+<p align="center">
+  <img src="./docs/images/home page.png" width="900">
+</p>
 
 ---
 
