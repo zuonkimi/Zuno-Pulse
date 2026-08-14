@@ -4,13 +4,24 @@
     <div class="task-left">
       <!-- MEDIA -->
       <div class="task-media">
-        {{#if task.attachments}} {{#each task.attachments}} {{#if (includes type
-        "image")}} <img src="{{url}}" class="media" alt="{{name}}" /> {{else if
-        (includes type "video")}}
-        <video controls class="media">
+        {{#if task.attachments}} {{!-- GRID ẢNH --}}
+        <div
+          class="task-media-grid"
+          id="taskMediaGrid"
+          data-images='[{{#each task.attachments}}{{#if (includes type "image")}}"{{url}}"{{#unless @last}},{{/unless}}{{/if}}{{/each}}]'
+        >
+          {{#each task.attachments}} {{#if (includes type "image")}}
+          <div class="task-media-item">
+            <img src="{{url}}" alt="{{name}}" />
+          </div>
+          {{/if}} {{/each}}
+        </div>
+        {{!-- VIDEO / FILE (không thuộc grid ảnh) --}} {{#each
+        task.attachments}} {{#if (includes type "video")}}
+        <video controls class="media task-video">
           <source src="{{url}}" type="video/mp4" />
         </video>
-        {{else}}
+        {{else}} {{#unless (includes type "image")}}
         <div class="file-placeholder">
           <i
             class="bi bi-file-earmark-text"
@@ -18,7 +29,7 @@
           ></i>
           <p>{{name}}</p>
         </div>
-        {{/if}} {{/each}} {{else}}
+        {{/unless}} {{/if}} {{/each}} {{else}}
         <div class="no-media">
           <i class="bi bi-image" style="font-size: 4rem; opacity: 0.2"></i>
           <p>Không có file đính kèm</p>
@@ -37,7 +48,7 @@
             <div>
               <div class="name-line">
                 <strong>{{task.author.name}}</strong>
-                <span> • {{formatDate task.deadline}} </span>
+                <span> • {{timeAgo task.createdAt}} </span>
               </div>
             </div>
           </div>
@@ -52,7 +63,6 @@
         </div>
       </div>
     </div>
-
     {{!-- RIGHT COLUMN --}}
     <div class="task-right">
       <div class="comment-box">
@@ -108,7 +118,10 @@
                     </div>
                     <div class="comment-content">{{this.content}}</div>
                     <div class="comment-footer">
-                      <button class="like-comment-btn" data-id="{{this._id}}">
+                      <button
+                        class="like-comment-btn {{#if this.isLiked}}liked{{/if}}"
+                        data-id="{{this._id}}"
+                      >
                         <i class="bi bi-heart-fill"></i>
                         <span>{{this.likeCount}}</span>
                       </button>
@@ -125,8 +138,8 @@
           </div>
           {{else}}
           <div class="comment-list empty">
-            Chưa có bình luận nào. <br />
-            Hãy là người đầu tiên bình luận!
+            No comments yet<br />
+            Be the first to comment!
           </div>
           {{/each}}
         </div>
@@ -135,7 +148,7 @@
           <input
             id="comment-input"
             type="text"
-            placeholder="Viết bình luận của bạn..."
+            placeholder="Write your comment..."
             autocomplete="off"
           />
           <button id="comment-btn" data-task="{{task._id}}">
@@ -147,26 +160,119 @@
   </div>
 </div>
 
+<!-- LIGHTBOX -->
+<div class="image-lightbox" id="imageLightbox">
+  <button type="button" class="lightbox-close" id="lightboxClose">
+    <i class="bi bi-x-lg"></i>
+  </button>
+  <button type="button" class="lightbox-nav lightbox-prev" id="lightboxPrev">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+  <div class="lightbox-content">
+    <img id="lightboxImg" src="" alt="Post image" />
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+  <button type="button" class="lightbox-nav lightbox-next" id="lightboxNext">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-modal-box">
+    <div class="confirm-modal-icon">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <h4 class="confirm-modal-title" id="confirmModalTitle">Delete comment?</h4>
+    <p class="confirm-modal-text" id="confirmModalText">
+      This action cannot be undone
+    </p>
+    <div class="confirm-modal-actions">
+      <button
+        type="button"
+        class="confirm-modal-btn cancel"
+        id="confirmModalCancel"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="confirm-modal-btn danger"
+        id="confirmModalOk"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('comment-input');
     const sendBtn = document.getElementById('comment-btn');
     const commentList = document.getElementById('comment-list');
     const taskId = sendBtn?.dataset.task;
+    // ===== CUSTOM CONFIRM MODAL =====
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmModalTitle = document.getElementById('confirmModalTitle');
+    const confirmModalText = document.getElementById('confirmModalText');
+    const confirmModalOk = document.getElementById('confirmModalOk');
+    const confirmModalCancel = document.getElementById('confirmModalCancel');
+    function confirmDialog({
+      title = 'Are you sure?',
+      text = 'This action cannot be undone.',
+      okText = 'Delete',
+    } = {}) {
+      return new Promise(resolve => {
+        confirmModalTitle.textContent = title;
+        confirmModalText.textContent = text;
+        confirmModalOk.textContent = okText;
+        confirmModal.classList.add('active');
 
+        function cleanup(result) {
+          confirmModal.classList.remove('active');
+          confirmModalOk.removeEventListener('click', onOk);
+          confirmModalCancel.removeEventListener('click', onCancel);
+          confirmModal.removeEventListener('click', onBackdrop);
+          document.removeEventListener('keydown', onKeydown);
+          resolve(result);
+        }
+
+        function onOk() {
+          cleanup(true);
+        }
+        function onCancel() {
+          cleanup(false);
+        }
+        function onBackdrop(e) {
+          if (e.target === confirmModal) cleanup(false);
+        }
+        function onKeydown(e) {
+          if (e.key === 'Escape') cleanup(false);
+          if (e.key === 'Enter') cleanup(true);
+        }
+
+        confirmModalOk.addEventListener('click', onOk);
+        confirmModalCancel.addEventListener('click', onCancel);
+        confirmModal.addEventListener('click', onBackdrop);
+        document.addEventListener('keydown', onKeydown);
+      });
+    }
     if (!input || !sendBtn || !commentList || !taskId) return;
     // SEND COMMENT
+    let isSending = false; // THÊM: cờ khóa chống double-submit
+
     async function sendComment() {
+      if (isSending) return; // THÊM: chặn gọi chồng
       const content = input.value.trim();
       if (!content) return;
+      isSending = true; // THÊM
       sendBtn.disabled = true;
       sendBtn.innerHTML = '<i class="bi bi-hourglass-split"></i>';
       try {
         const res = await fetch('/api/comments', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             content,
             taskId,
@@ -175,18 +281,18 @@
         });
         const data = await res.json();
         if (!data.success || !data.comment) {
-          alert(data.message || 'Không thể gửi bình luận');
+          alert(data.message || 'Failed to send comment');
           return;
         }
         renderNewComment(data.comment);
-        // reset input
         input.value = '';
         input.dataset.replyTo = '';
-        input.placeholder = 'Viết bình luận của bạn...';
+        input.placeholder = 'Write your comment...';
       } catch (err) {
         console.error(err);
-        alert('Lỗi kết nối');
+        alert('Failed to send comment');
       } finally {
+        isSending = false; // THÊM
         sendBtn.disabled = false;
         sendBtn.innerHTML = '<i class="bi bi-send-fill"></i>';
       }
@@ -307,7 +413,8 @@
     // EVENTS
     sendBtn.addEventListener('click', sendComment);
     input.addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.repeat) {
+        // THÊM: !e.repeat chặn giữ phím
         sendComment();
       }
     });
@@ -338,21 +445,24 @@
       }
       // DELETE
       if (deleteBtn) {
-        const ok = confirm('Xóa bình luận này?');
-        if (!ok) return;
+        const confirmed = await confirmDialog({
+          title: 'Delete comment?',
+          text: 'This comment will be permanently deleted and cannot be recovered.',
+          okText: 'Delete',
+        });
+        if (!confirmed) return;
+
         const id = deleteBtn.dataset.id;
         const item = deleteBtn.closest('.comment-item, .reply-item');
         try {
-          const res = await fetch(`/api/comments/${id}`, {
-            method: 'DELETE',
-          });
+          const res = await fetch(`/api/comments/${id}`, { method: 'DELETE' });
           const data = await res.json();
           if (data.success) {
             item.remove();
           }
         } catch (err) {
           console.error(err);
-          alert('Không thể xóa');
+          alert('Unable to delete comment');
         }
         return;
       }
@@ -361,12 +471,104 @@
         const commentId = replyBtn.dataset.id;
         input.focus();
         input.dataset.replyTo = commentId;
-        input.placeholder = 'Đang trả lời bình luận...';
+        input.placeholder = 'Replying to comment...';
         input.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
       }
     });
+
+    // MEDIA GRID + LIGHTBOX (task detail)
+    (() => {
+      const grid = document.getElementById('taskMediaGrid');
+      if (!grid) return;
+      let images = [];
+      try {
+        images = JSON.parse(grid.dataset.images || '[]');
+      } catch (err) {
+        images = [];
+      }
+      // THÊM: nếu bài không có ảnh nào (chỉ video/file) thì ẩn hẳn khối grid rỗng
+      if (images.length === 0) {
+        grid.style.display = 'none';
+      }
+      const items = Array.from(grid.querySelectorAll('.task-media-item'));
+      const MAX_VISIBLE = 4;
+      if (items.length > MAX_VISIBLE) {
+        items.forEach((item, i) => {
+          if (i >= MAX_VISIBLE) item.style.display = 'none';
+        });
+        const extra = items.length - MAX_VISIBLE;
+        const overlay = document.createElement('div');
+        overlay.className = 'task-media-more';
+        overlay.innerHTML = `<span>+${extra}</span>`;
+        items[MAX_VISIBLE - 1].appendChild(overlay);
+      }
+
+      const lightbox = document.getElementById('imageLightbox');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxClose = document.getElementById('lightboxClose');
+      const lightboxPrev = document.getElementById('lightboxPrev');
+      const lightboxNext = document.getElementById('lightboxNext');
+      const lightboxCounter = document.getElementById('lightboxCounter');
+      let currentIndex = 0;
+      function renderLightbox() {
+        if (!images.length) return;
+        lightboxImg.src = images[currentIndex];
+        const hasMultiple = images.length > 1;
+        lightboxCounter.style.display = hasMultiple ? 'block' : 'none';
+        lightboxCounter.textContent = `${currentIndex + 1} / ${images.length}`;
+        // dừng ở đầu/cuối, KHÔNG lặp vòng
+        lightboxPrev.style.display =
+          hasMultiple && currentIndex > 0 ? 'flex' : 'none';
+        lightboxNext.style.display =
+          hasMultiple && currentIndex < images.length - 1 ? 'flex' : 'none';
+      }
+      items.forEach((item, index) => {
+        if (index >= MAX_VISIBLE) return;
+        item.addEventListener('click', () => {
+          currentIndex = index;
+          renderLightbox();
+          lightbox.classList.add('active');
+        });
+      });
+
+      function showPrev() {
+        if (currentIndex <= 0) return;
+        currentIndex -= 1;
+        renderLightbox();
+      }
+
+      function showNext() {
+        if (currentIndex >= images.length - 1) return;
+        currentIndex += 1;
+        renderLightbox();
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('active');
+        lightboxImg.src = '';
+      }
+
+      lightboxPrev.addEventListener('click', e => {
+        e.stopPropagation();
+        showPrev();
+      });
+      lightboxNext.addEventListener('click', e => {
+        e.stopPropagation();
+        showNext();
+      });
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', e => {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', e => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+      });
+    })();
   });
 </script>

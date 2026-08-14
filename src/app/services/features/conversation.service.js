@@ -3,7 +3,6 @@ const Conversation = require('../../models/features/Conversation');
 class ConversationService {
   async getMyConversations(userId) {
     const currentUserId = userId.toString();
-
     const conversations = await Conversation.find({
       participants: userId,
     })
@@ -20,14 +19,12 @@ class ConversationService {
       if (aPinned !== bPinned) {
         return bPinned - aPinned;
       }
-
       return new Date(b.lastMessageAt) - new Date(a.lastMessageAt);
     });
     return conversations.map(conversation => {
       const otherUser = conversation.participants.find(
         participant => participant._id.toString() !== currentUserId,
       );
-
       return {
         ...conversation,
         otherUser,
@@ -57,13 +54,9 @@ class ConversationService {
 
   async markAsRead(conversationId, userId) {
     const conversation = await Conversation.findById(conversationId);
-
     if (!conversation) return null;
-
     conversation.unreadCount.set(userId.toString(), 0);
-
     await conversation.save();
-
     return conversation;
   }
 
@@ -71,9 +64,7 @@ class ConversationService {
     const conversations = await Conversation.find({
       participants: userId,
     }).lean();
-
     const currentUserId = userId.toString();
-
     return conversations.reduce((sum, conversation) => {
       const unread = conversation.unreadCount?.[currentUserId] || 0;
       return sum + (unread > 0 ? 1 : 0);

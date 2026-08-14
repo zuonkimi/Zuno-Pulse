@@ -13,12 +13,10 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
-
     // FIX ĐÚNG
     file._originalName = Buffer.from(file.originalname, 'latin1').toString(
       'utf8',
     );
-
     cb(null, uniqueName + ext);
   },
 });

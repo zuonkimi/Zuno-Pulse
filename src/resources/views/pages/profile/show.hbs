@@ -101,6 +101,10 @@
         <a href="/tasks/{{this._id}}" class="post-link">
           {{#if this.attachments.[0].url}}
           <img src="{{this.attachments.[0].url}}" alt="{{this.title}}" />
+          {{else}}
+          <div class="post-placeholder">
+            <i class="bi bi-clipboard-check"></i>
+          </div>
           {{/if}}
           <div class="post-body">
             <h4>{{this.title}}</h4>
@@ -125,7 +129,6 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const triggers = document.querySelectorAll('.dropdown-trigger');
-
     triggers.forEach(btn => {
       btn.addEventListener('click', e => {
         e.preventDefault();

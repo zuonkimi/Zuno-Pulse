@@ -75,7 +75,6 @@ class UserService {
     if (meaningful.length < 2) {
       return { tasks: [], users: [], keyword };
     }
-    // Search users
     const users = await User.find({
       $or: [
         { name: { $regex: keyword, $options: 'i' } },
@@ -84,8 +83,12 @@ class UserService {
     })
       .limit(10)
       .lean();
-    // Search tasks
-    const tasksData = await taskService.getTasksPage(viewerId, { keyword });
+    // Search tasks toàn hệ thống, không giới hạn theo author
+    const tasksData = await taskService.getTasksPage(
+      viewerId,
+      { keyword },
+      'search',
+    );
     return {
       tasks: tasksData.tasks,
       users,

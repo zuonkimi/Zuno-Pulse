@@ -1,5 +1,4 @@
 const Joi = require('joi');
-
 const taskValidateSchema = Joi.object({
   title: Joi.string().min(1).required(),
   description: Joi.string().allow(''),

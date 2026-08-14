@@ -3,7 +3,6 @@
   <aside class="conversation-list">
     <div class="conversation-header">
       <div class="title">Messages</div>
-
       <div class="search-box-message">
         <i class="bi bi-search"></i>
         <input
@@ -27,7 +26,6 @@
       >
         <div class="avatar-wrapper">
           <img class="avatar" src="{{this.otherUser.avatar}}" />
-
           <span
             class="online-dot"
             data-online-dot="{{this.otherUser._id}}"
@@ -50,7 +48,7 @@
 
             <div class="right-meta">
               <div class="conversation-time">
-                {{formatTime this.lastMessageAt}}
+                {{timeAgo this.lastMessageAt}}
               </div>
               <div class="conversation-menu-wrapper">
                 <button
@@ -76,7 +74,6 @@
 
           <div class="conversation-bottom">
             <div class="last">{{this.lastMessage}}</div>
-
             {{#if this.unread}}
             <div class="conversation-badge">{{this.unread}}</div>
             {{/if}}
@@ -95,7 +92,6 @@
       <div class="chat-user">
         <div class="chat-avatar-wrapper">
           <img class="chat-avatar" src="{{conversation.otherUser.avatar}}" />
-
           <span
             class="online-dot"
             data-online-dot="{{conversation.otherUser._id}}"
@@ -104,7 +100,6 @@
         </div>
         <div class="chat-user-info">
           <div class="chat-name">{{conversation.otherUser.name}}</div>
-
           <div
             class="chat-status"
             data-chat-user-id="{{conversation.otherUser._id}}"
@@ -114,7 +109,6 @@
           </div>
         </div>
       </div>
-
       <div class="chat-header-actions">
         <div id="chatMessageSearch">
           <input
@@ -122,22 +116,18 @@
             id="chatSearchInput"
             placeholder="Search messages..."
           />
-
           <span id="searchCounter"></span>
           <button type="button" id="closeSearchBtn">✕</button>
           <button type="button" id="searchPrevBtn">▲</button>
-
           <button type="button" id="searchNextBtn">▼</button>
         </div>
         <button type="button" id="messageSearchBtn">
           <i class="bi bi-search"></i>
         </button>
-
         <div class="chat-menu-wrapper">
           <button type="button" id="chatMenuBtn">
             <i class="bi bi-three-dots"></i>
           </button>
-
           <div class="chat-menu" id="chatMenu">
             <button
               id="pinConversationBtn"
@@ -152,7 +142,6 @@
         </div>
       </div>
     </div>
-
     {{!-- Panel Shared Media --}}
     <div id="sharedMediaPanel" class="shared-media-panel">
       <div class="shared-header">
@@ -160,77 +149,77 @@
           <h3>Shared Media</h3>
           <span id="sharedCount"></span>
         </div>
-
         <button id="closeSharedMedia">✕</button>
       </div>
-
       <div class="shared-tabs">
         <button class="shared-tab active" data-tab="images">Images</button>
-
         <button class="shared-tab" data-tab="files">Files</button>
-
         <button class="shared-tab" data-tab="links">Links</button>
       </div>
 
       <div class="shared-content">
         <div id="sharedImages" class="shared-page active"></div>
-
         <div id="sharedFiles" class="shared-page"></div>
-
         <div id="sharedLinks" class="shared-page"></div>
       </div>
     </div>
-
     <!-- BODY -->
     <div class="chat-body">
       {{#each messages}}
-
       <!-- DATE GROUP -->
       {{#if this.showDate}}
       <div class="date-label">{{this.dateLabel}}</div>
       {{/if}}
-
       <!-- MESSAGE -->
       <div class="msg {{#if this.isMine}}mine{{/if}}">
         {{#unless this.isMine}}
         <img class="msg-avatar" src="{{this.sender.avatar}}" />
         {{/unless}}
-
         <div class="msg-content">
           <div class="msg-bubble" data-message-id="{{this._id}}">
             {{#if (arrayIncludes this.starredBy ../currentUserId)}}
             <div class="message-star">⭐</div>
-            {{/if}} {{#if this.replySnapshot}}
+            {{/if}} {{#if this.isRecalled}}
+
+            <i class="recalled-message"> Tin nhắn đã được thu hồi </i>
+
+            {{else}} {{!-- REPLY --}} {{#if this.replySnapshot}}
             <div class="reply-preview-box" data-reply-id="{{this.replyTo._id}}">
               {{this.replySnapshot.content}}
             </div>
-            {{/if}} {{#if this.isRecalled}}
-
-            <i>Tin nhắn đã được thu hồi</i>
-
-            {{else}} {{#if (eq this.type "image")}}
-
-            <img src="{{this.fileUrl}}" class="chat-image" />
-
-            {{else if (eq this.type "file")}}
-
-            <a href="{{this.fileUrl}}" target="_blank">
-              📎 {{this.fileName}}
+            {{/if}} {{!-- IMAGE --}} {{#if (eq this.type "image")}} {{#if
+            this.fileUrl}}
+            <img
+              src="{{this.fileUrl}}"
+              class="chat-image js-chat-image"
+              data-image-url="{{this.fileUrl}}"
+              alt="{{this.fileName}}"
+              loading="lazy"
+            />
+            {{/if}} {{/if}} {{!-- FILE --}} {{#if (eq this.type "file")}} {{#if
+            this.fileUrl}}
+            <a
+              href="{{this.fileUrl}}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="chat-file"
+            >
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+              <span>{{this.fileName}}</span>
+              <i class="bi bi-box-arrow-up-right"></i>
             </a>
-
-            {{else}} {{this.content}} {{/if}} {{/if}}
+            {{/if}} {{/if}} {{!-- TEXT + EMOJI --}} {{#if this.content}}
+            <div class="message-text">{{this.content}}</div>
+            {{/if}} {{/if}}
           </div>
-
           <div class="msg-time">{{this.time}}</div>
         </div>
-
         <!-- MOVE VÀO TRONG msg -->
         {{#unless this.isRecalled}}
         <div class="msg-actions">
           <button class="msg-menu-btn" data-message-id="{{this._id}}">
             <i class="bi bi-three-dots"></i>
           </button>
-
           <div class="msg-menu" data-menu-id="{{this._id}}">
             <button class="msg-action reply">Reply</button>
             <button class="msg-action forward">Forward</button>
@@ -251,7 +240,6 @@
     <button type="button" id="scrollToBottomBtn" class="scroll-to-bottom-btn">
       <i class="bi bi-arrow-down"></i>
     </button>
-
     <!-- FOOTER -->
     <form id="messageForm" class="chat-footer">
       <div id="messageError" class="message-error"></div>
@@ -262,45 +250,56 @@
         <div class="chat-input-wrapper">
           <div class="chat-tools">
             <input type="file" id="messageFile" hidden multiple />
-
             <button type="button" class="tool-btn" id="attachBtn">
               <i class="bi bi-paperclip"></i>
             </button>
-
             <button type="button" class="tool-btn" id="emojiBtn">
               <i class="bi bi-emoji-smile"></i>
             </button>
           </div>
-
           <textarea
             id="messageInput"
             rows="1"
             placeholder="Type a message..."
           ></textarea>
         </div>
-
         <button type="submit" class="send-btn">
           <i class="bi bi-send-fill"></i>
         </button>
       </div>
     </form>
     {{else}}
-
     <div class="chat-empty">
       <i class="bi bi-chat-dots"></i>
-
       <h3>Select a conversation</h3>
-
       <p>Choose a conversation from the left to start messaging.</p>
     </div>
     {{/if}}
   </section>
 </div>
 {{#if conversation}}
+
 <script>
   window.conversationId = '{{conversation._id}}';
 </script>
 {{/if}}
+<!-- CHAT IMAGE LIGHTBOX -->
+<div id="chatImageLightbox" class="chat-image-lightbox">
+  <button
+    type="button"
+    id="chatImageLightboxClose"
+    class="chat-image-lightbox-close"
+    aria-label="Close"
+  >
+    <i class="bi bi-x-lg"></i>
+  </button>
+  <img
+    id="chatImageLightboxImg"
+    class="chat-image-lightbox-img"
+    src=""
+    alt="Preview"
+  />
+</div>
 
 <script>
   let replyMessage = null;
@@ -309,22 +308,17 @@
   // MARK READ
   async function markCurrentConversationRead() {
     if (!window.conversationId) return;
-
     try {
       const res = await fetch(`/messages/read/${window.conversationId}`, {
         method: 'POST',
       });
-
       if (!res.ok) return;
       const activeConversation = document.querySelector(
         `.conversation-item[href="/messages/${window.conversationId}"]`,
       );
-
       if (activeConversation) {
         activeConversation.classList.remove('unread');
-
         const badge = activeConversation.querySelector('.conversation-badge');
-
         if (badge) {
           badge.remove();
         }
@@ -333,39 +327,23 @@
       console.error(err);
     }
   }
-
   markCurrentConversationRead();
-
-  // =========================
   // SCROLL
-  // =========================
-
   if (chatBody) {
     requestAnimationFrame(() => {
       chatBody.scrollTop = chatBody.scrollHeight;
     });
   }
-
-  // =========================
   // SEARCH
-  // =========================
-
   const searchInput = document.querySelector('.conversation-search');
-
   const listContainer = document.querySelector('.conversation-items');
-
   let timeout;
-
   searchInput?.addEventListener('input', e => {
     clearTimeout(timeout);
-
     timeout = setTimeout(async () => {
       const q = e.target.value;
-
       const res = await fetch(`/messages/search?q=${encodeURIComponent(q)}`);
-
       const data = await res.json();
-
       renderConversations(data);
     }, 250);
   });
@@ -379,7 +357,6 @@
       `;
       return;
     }
-
     listContainer.innerHTML = data
       .map(
         c => `
@@ -400,14 +377,12 @@ ${c.isActive ? 'active' : ''}
     class="avatar"
     src="${c.otherUser.avatar}"
   />
-
   <span
     class="online-dot"
     data-online-dot="${c.otherUser._id}"
     style="${c.otherUser.isOnline ? 'display:block' : 'display:none'}"
   ></span>
 </div>
-
           <div class="info">
 
   <div class="conversation-top">
@@ -419,13 +394,10 @@ ${c.isActive ? 'active' : ''}
       ${c.lastMessageAtFormatted || ''}
     </div>
   </div>
-
   <div class="conversation-bottom">
-
     <div class="last">
       ${c.lastMessage || ''}
     </div>
-
     ${
       c.unread
         ? `
@@ -435,115 +407,85 @@ ${c.isActive ? 'active' : ''}
     `
         : ''
     }
-
   </div>
-
 </div>
-
         </a>
       `,
       )
       .join('');
   }
   const messageInput = document.getElementById('messageInput');
-
   if (messageInput) {
     messageInput.addEventListener('input', () => {
       messageInput.style.height = 'auto';
       messageInput.style.height = messageInput.scrollHeight + 'px';
     });
   }
-  // =========================
   // CLICK CONVERSATION
-  // =========================
-
   document.addEventListener('click', e => {
     const item = e.target.closest('.conversation-item');
-
     if (!item) return;
     if (e.target.closest('.conversation-menu-btn')) return;
     item.classList.remove('unread');
-
     const badge = item.querySelector('.conversation-badge');
-
     if (badge) {
       badge.remove();
     }
   });
   let selectedFiles = [];
   const attachBtn = document.getElementById('attachBtn');
-
   const fileInput = document.getElementById('messageFile');
-
   attachBtn?.addEventListener('click', () => fileInput.click());
-
   const previewBox = document.getElementById('attachmentPreview');
   const errorBox = document.getElementById('messageError');
-
   function showError(message) {
     if (!errorBox) return;
-
     errorBox.textContent = message;
     errorBox.style.display = 'block';
-
     setTimeout(() => {
       errorBox.style.display = 'none';
     }, 5000);
   }
   fileInput?.addEventListener('change', () => {
     const files = [...fileInput.files];
-
     const MAX_SIZE = 10 * 1024 * 1024;
-
     const validFiles = [];
-
     files.forEach(file => {
       const isAllowed =
         file.type.startsWith('image/') || file.type === 'application/pdf';
-
       if (!isAllowed) {
         showError(`${file.name}: chỉ hỗ trợ ảnh và PDF`);
         return;
       }
-
       if (file.size > MAX_SIZE) {
         showError(`${file.name}: vượt quá 10MB`);
         return;
       }
-
       const exists = selectedFiles.some(
         f =>
           f.name === file.name &&
           f.size === file.size &&
           f.lastModified === file.lastModified,
       );
-
       if (exists) {
         showError(`${file.name}: đã được chọn`);
         return;
       }
-
       validFiles.push(file);
     });
-
     if (!validFiles.length) {
       fileInput.value = '';
       return;
     }
-
     selectedFiles.push(...validFiles);
-
     renderPreview();
-
     fileInput.value = '';
   });
   function renderPreview() {
     previewBox.innerHTML = '';
-
     selectedFiles.forEach((file, index) => {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
-
         reader.onload = e => {
           previewBox.insertAdjacentHTML(
             'beforeend',
@@ -553,7 +495,6 @@ ${c.isActive ? 'active' : ''}
               src="${e.target.result}"
               class="preview-image"
             />
-
             <button
               type="button"
               class="remove-preview"
@@ -565,18 +506,15 @@ ${c.isActive ? 'active' : ''}
         `,
           );
         };
-
         reader.readAsDataURL(file);
       } else {
         previewBox.insertAdjacentHTML(
           'beforeend',
           `
         <div class="preview-item">
-
           <div class="preview-file">
             📎 ${file.name}
           </div>
-
           <button
             type="button"
             class="remove-preview"
@@ -584,7 +522,6 @@ ${c.isActive ? 'active' : ''}
           >
             ×
           </button>
-
         </div>
       `,
         );
@@ -593,41 +530,26 @@ ${c.isActive ? 'active' : ''}
   }
   document.addEventListener('click', e => {
     if (!e.target.classList.contains('remove-preview')) return;
-
     const index = Number(e.target.dataset.index);
-
     selectedFiles.splice(index, 1);
-
     renderPreview();
   });
-  // =========================
   // EMOJI PICKER
-  // =========================
-
   const emojiBtn = document.getElementById('emojiBtn');
-
   const emojiContainer = document.getElementById('emojiContainer');
-
   let emojiPicker = null;
-
   emojiBtn?.addEventListener('click', () => {
     if (emojiPicker) {
       emojiPicker.remove();
       emojiPicker = null;
       return;
     }
-
     emojiPicker = document.createElement('emoji-picker');
-
     emojiContainer.innerHTML = '';
-
     emojiContainer.appendChild(emojiPicker);
-
     emojiPicker.addEventListener('emoji-click', event => {
       messageInput.value += event.detail.unicode;
-
       messageInput.dispatchEvent(new Event('input'));
-
       messageInput.focus();
     });
   });
@@ -640,7 +562,6 @@ ${c.isActive ? 'active' : ''}
     ) {
       return;
     }
-
     emojiPicker.remove();
     emojiPicker = null;
   });
@@ -657,10 +578,8 @@ ${c.isActive ? 'active' : ''}
   }
   let searchResults = [];
   let currentSearchIndex = 0;
-
   messageSearchBtn?.addEventListener('click', () => {
     const isOpen = chatMessageSearch.style.display === 'flex';
-
     if (isOpen) {
       chatMessageSearch.style.display = 'none';
       resetSearch();
@@ -669,24 +588,18 @@ ${c.isActive ? 'active' : ''}
       chatSearchInput.focus();
     }
   });
-
   let searchTimeout;
-
   chatSearchInput?.addEventListener('input', e => {
     clearTimeout(searchTimeout);
-
     searchTimeout = setTimeout(async () => {
       const keyword = e.target.value.trim();
-
       if (!keyword) {
         resetSearch();
         return;
       }
-
       const res = await fetch(
         `/messages/${window.conversationId}/search-message?q=${encodeURIComponent(keyword)}`,
       );
-
       const data = await res.json();
       highlightSearchResult(data);
       console.log(data);
@@ -700,43 +613,30 @@ ${c.isActive ? 'active' : ''}
   }
   function highlightSearchResult(messages) {
     clearSearchHighlight();
-
     searchResults = [];
     currentSearchIndex = 0;
-
     messages.forEach(msg => {
       const bubble = document.querySelector(`[data-message-id="${msg._id}"]`);
-
       if (!bubble) return;
-
       bubble.classList.add('search-highlight');
-
       searchResults.push(bubble);
     });
-
     updateSearchCounter();
-
     goToSearchResult(0);
   }
 
   function goToSearchResult(index) {
     if (!searchResults.length) return;
-
     document
       .querySelectorAll('.search-current')
       .forEach(el => el.classList.remove('search-current'));
-
     currentSearchIndex = index;
-
     const target = searchResults[currentSearchIndex];
-
     target.classList.add('search-current');
-
     target.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
     });
-
     updateSearchCounter();
   }
 
@@ -745,19 +645,16 @@ ${c.isActive ? 'active' : ''}
       searchCounter.textContent = '0';
       return;
     }
-
     searchCounter.textContent = `${currentSearchIndex + 1}/${searchResults.length}`;
   }
   function resetSearch() {
     clearSearchHighlight();
-
     searchResults = [];
     currentSearchIndex = 0;
-
     searchCounter.textContent = '';
     chatSearchInput.value = '';
 
-    // ✅ ADD THIS
+    // ADD THIS
     document
       .querySelectorAll('.search-current')
       .forEach(el => el.classList.remove('search-current'));
@@ -770,45 +667,36 @@ ${c.isActive ? 'active' : ''}
   chatSearchInput?.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       resetSearch();
-
       chatMessageSearch.style.display = 'none';
     }
   });
   searchNextBtn?.addEventListener('click', () => {
     if (!searchResults.length) return;
-
     let next = currentSearchIndex + 1;
-
     if (next >= searchResults.length) {
       next = 0;
     }
-
     goToSearchResult(next);
   });
 
   searchPrevBtn?.addEventListener('click', () => {
     if (!searchResults.length) return;
-
     let prev = currentSearchIndex - 1;
-
     if (prev < 0) {
       prev = searchResults.length - 1;
     }
-
     goToSearchResult(prev);
   });
 
   chatSearchInput?.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-
       searchNextBtn.click();
     }
   });
 
   function isNearBottom() {
     if (!chatBody) return true;
-
     return (
       chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 150
     );
@@ -829,28 +717,22 @@ ${c.isActive ? 'active' : ''}
 
   document.addEventListener('click', e => {
     const btn = e.target.closest('.msg-menu-btn');
-
     // mở menu
     if (btn) {
       e.stopPropagation();
       const id = btn.dataset.messageId;
-
       // đóng tất cả menu khác
       document.querySelectorAll('.msg-menu').forEach(m => {
         if (m.dataset.menuId !== id) {
           m.classList.remove('show');
         }
       });
-
       const menu = document.querySelector(`.msg-menu[data-menu-id="${id}"]`);
-
       if (menu) {
         menu.classList.toggle('show');
       }
-
       return;
     }
-
     // click ra ngoài thì đóng hết
     document.querySelectorAll('.msg-menu').forEach(m => {
       m.classList.remove('show');
@@ -860,13 +742,10 @@ ${c.isActive ? 'active' : ''}
   document.addEventListener('click', e => {
     const btn = e.target.closest('.msg-action.reply');
     if (!btn) return;
-
     const menu = btn.closest('.msg-menu');
     const messageId = menu.dataset.menuId;
-
     const bubble = document.querySelector(`[data-message-id="${messageId}"]`);
     let previewText = bubble.innerText.trim();
-
     if (!previewText) {
       if (bubble.querySelector('.chat-image')) {
         previewText = '📷 Image';
@@ -875,22 +754,16 @@ ${c.isActive ? 'active' : ''}
       }
     }
     if (!bubble) return;
-
     replyMessage = {
       id: messageId,
       text: previewText,
     };
-
     showReplyPreview(replyMessage.text);
   });
-
   const replyPreview = document.getElementById('replyPreview');
-
   function showReplyPreview(text) {
     replyPreview.style.display = 'block';
-
     scrollToBottomBtn?.classList.add('has-reply');
-
     replyPreview.innerHTML = `
     <div style="display:flex; justify-content:space-between;">
       <div>
@@ -904,9 +777,7 @@ ${c.isActive ? 'active' : ''}
   document.addEventListener('click', e => {
     if (e.target.id === 'cancelReply') {
       replyMessage = null;
-
       replyPreview.style.display = 'none';
-
       scrollToBottomBtn?.classList.remove('has-reply');
     }
   });
@@ -914,33 +785,25 @@ ${c.isActive ? 'active' : ''}
     const preview = e.target.closest(
       '.reply-preview-box, .reply-message-preview',
     );
-
     if (!preview) return;
-
     const replyId = preview.dataset.replyId;
-
     const target = document.querySelector(`[data-message-id="${replyId}"]`);
     console.log(target);
     if (!target) return;
-
     target.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
     });
-
     document.querySelectorAll('.reply-target-highlight').forEach(el => {
       el.classList.remove('reply-target-highlight');
     });
-
     setTimeout(() => {
       target.classList.add('reply-target-highlight');
     }, 300);
   });
   document.addEventListener('click', e => {
     const isReplyPreview = e.target.closest('.reply-preview-box');
-
     if (isReplyPreview) return;
-
     document.querySelectorAll('.reply-target-highlight').forEach(el => {
       el.classList.remove('reply-target-highlight');
     });
@@ -948,30 +811,20 @@ ${c.isActive ? 'active' : ''}
 
   document.addEventListener('click', async e => {
     const btn = e.target.closest('.msg-action.recall');
-
     if (!btn) return;
-
     const menu = btn.closest('.msg-menu');
-
     const messageId = menu.dataset.menuId;
-
     if (!confirm('Thu hồi tin nhắn này?')) {
       return;
     }
-
     try {
       const res = await fetch(`/messages/recall/${messageId}`, {
         method: 'POST',
       });
-
       const data = await res.json();
-
       if (!data.success) return;
-
       const bubble = document.querySelector(`[data-message-id="${messageId}"]`);
-
       if (!bubble) return;
-
       bubble.innerHTML = `
       <i>Tin nhắn đã được thu hồi</i>
     `;
@@ -982,17 +835,12 @@ ${c.isActive ? 'active' : ''}
 
   document.addEventListener('click', async e => {
     const btn = e.target.closest('.msg-action.star');
-
     if (!btn) return;
-
     const menu = btn.closest('.msg-menu');
-
     const messageId = menu.dataset.menuId;
-
     const res = await fetch(`/messages/star/${messageId}`, {
       method: 'POST',
     });
-
     const data = await res.json();
   });
 
@@ -1001,10 +849,8 @@ ${c.isActive ? 'active' : ''}
   const sharedMediaBtn = document.getElementById('sharedMediaBtn');
   const sharedMediaPanel = document.getElementById('sharedMediaPanel');
   const closeSharedMedia = document.getElementById('closeSharedMedia');
-
   chatMenuBtn?.addEventListener('click', e => {
     e.stopPropagation();
-
     chatMenu.classList.toggle('show');
   });
 
@@ -1028,13 +874,10 @@ ${c.isActive ? 'active' : ''}
       document
         .querySelectorAll('.shared-tab')
         .forEach(x => x.classList.remove('active'));
-
       document
         .querySelectorAll('.shared-page')
         .forEach(x => x.classList.remove('active'));
-
       tab.classList.add('active');
-
       document
         .getElementById(
           'shared' +
@@ -1044,7 +887,6 @@ ${c.isActive ? 'active' : ''}
         .classList.add('active');
     });
   });
-
   document
     .getElementById('pinConversationBtn')
     ?.addEventListener('click', async () => {
@@ -1052,25 +894,20 @@ ${c.isActive ? 'active' : ''}
         method: 'POST',
       });
     });
-
   document
     .getElementById('deleteConversationBtn')
     ?.addEventListener('click', async () => {
       if (!confirm('Delete this conversation?')) {
         return;
       }
-
       const res = await fetch(
         `/messages/conversation/${window.conversationId}`,
         {
           method: 'DELETE',
         },
       );
-
       const data = await res.json();
-
       if (!data.success) return;
-
       location.href = '/messages';
     });
 
@@ -1127,9 +964,7 @@ ${c.isActive ? 'active' : ''}
       ? data.links
           .map(msg => {
             const match = msg.content.match(/https?:\/\/\S+/);
-
             if (!match) return '';
-
             return `
           <a
             class="shared-link-item"
@@ -1149,16 +984,13 @@ ${c.isActive ? 'active' : ''}
   }
   document.addEventListener('click', e => {
     const item = e.target.closest('.shared-image-item');
-
     if (!item) return;
-
     window.open(item.dataset.image, '_blank');
   });
 
   // Conversation menu
   document.addEventListener('click', e => {
     const btn = e.target.closest('.conversation-menu-btn');
-
     if (btn) {
       e.stopPropagation();
       e.preventDefault();
@@ -1169,12 +1001,10 @@ ${c.isActive ? 'active' : ''}
           menu.classList.remove('show');
         }
       });
-
       const menu = document.querySelector(
         `.conversation-menu[data-menu="${id}"]`,
       );
       menu?.classList.toggle('show');
-
       return;
     }
 
@@ -1185,23 +1015,57 @@ ${c.isActive ? 'active' : ''}
   document.addEventListener('click', async e => {
     const btn = e.target.closest('.delete-conversation-btn');
     if (!btn) return;
-
     const id = btn.dataset.id;
-
     if (!confirm('Delete this conversation?')) return;
-
     const res = await fetch(`/messages/conversation/${id}`, {
       method: 'DELETE',
     });
-
     const data = await res.json();
-
     if (!data.success) return;
-
     // xoá UI luôn
     const item = document.querySelector(
       `.conversation-item[data-conversation-id="${id}"]`,
     );
     item?.remove();
+  });
+  // CHAT IMAGE LIGHTBOX
+  const chatImageLightbox = document.getElementById('chatImageLightbox');
+  const chatImageLightboxImg = document.getElementById('chatImageLightboxImg');
+  const chatImageLightboxClose = document.getElementById(
+    'chatImageLightboxClose',
+  );
+  function openChatImage(url) {
+    if (!chatImageLightbox || !chatImageLightboxImg) return;
+    chatImageLightboxImg.src = url;
+    chatImageLightbox.classList.add('show');
+    document.body.classList.add('lightbox-open');
+  }
+
+  function closeChatImage() {
+    if (!chatImageLightbox || !chatImageLightboxImg) return;
+    chatImageLightbox.classList.remove('show');
+    chatImageLightboxImg.src = '';
+    document.body.classList.remove('lightbox-open');
+  }
+
+  document.addEventListener('click', e => {
+    const image = e.target.closest('.js-chat-image');
+    if (!image) return;
+    e.preventDefault();
+    openChatImage(image.dataset.imageUrl || image.src);
+  });
+
+  chatImageLightboxClose?.addEventListener('click', closeChatImage);
+
+  chatImageLightbox?.addEventListener('click', e => {
+    if (e.target === chatImageLightbox) {
+      closeChatImage();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeChatImage();
+    }
   });
 </script>

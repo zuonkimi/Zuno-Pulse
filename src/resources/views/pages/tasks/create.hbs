@@ -7,61 +7,194 @@
   </div>
 
   <form
+    id="createTaskForm"
     action="/tasks/store"
     method="POST"
     enctype="multipart/form-data"
     class="task-page-form mt-3"
   >
     <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-    <div class="mb-3">
+    <div class="form-group">
+      <label class="form-label" for="titleInput">
+        Title <span class="required">*</span>
+      </label>
       <input
+        id="titleInput"
         name="title"
         class="form-control"
-        placeholder="Tiêu đề..."
+        placeholder="What's this task about?"
         required
       />
     </div>
 
-    <div class="mb-3">
+    <div class="form-group">
+      <label class="form-label" for="descriptionInput">Description</label>
       <textarea
+        id="descriptionInput"
         name="description"
         class="form-control"
-        placeholder="Ghi chú..."
+        placeholder="Add more details..."
       ></textarea>
     </div>
 
-    <div class="mb-3">
-      <input type="file" name="attachments" class="form-control" multiple />
+    <div class="form-group">
+      <label class="form-label">Attachments</label>
+      <label class="dropzone" for="attachmentsInput">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <div class="dropzone-text">
+          <strong>Click to upload</strong> or drag files here
+        </div>
+        <div class="dropzone-hint">Images or documents</div>
+      </label>
+      <input
+        type="file"
+        id="attachmentsInput"
+        name="attachments"
+        multiple
+        hidden
+      />
+      <div class="file-preview" id="filePreview"></div>
     </div>
 
     <div class="row g-2">
       <div class="col-md-6">
-        <input type="date" name="deadline" class="form-control" />
+        <div class="form-group">
+          <label class="form-label" for="deadlineInput">Deadline</label>
+          <input
+            id="deadlineInput"
+            type="date"
+            name="deadline"
+            class="form-control"
+          />
+        </div>
       </div>
 
       <div class="col-md-6">
-        <select name="tags" class="form-control">
-          <option value="">--- Select tag ---</option>
-          <option value="請求書">請求書</option>
-          <option value="安全書類">安全書類</option>
-          <option value="発注">発注</option>
-          <option value="注文請書">注文請書</option>
-          <option value="リモート">リモート</option>
-          <option value="領収書">領収書</option>
-          <option value="他">他</option>
-        </select>
+        <div class="form-group">
+          <label class="form-label" for="tagInput">Tag</label>
+          <select id="tagInput" name="tags" class="form-control">
+            <option value="">--- Select tag ---</option>
+            <option value="請求書">請求書</option>
+            <option value="安全書類">安全書類</option>
+            <option value="発注">発注</option>
+            <option value="注文請書">注文請書</option>
+            <option value="リモート">リモート</option>
+            <option value="領収書">領収書</option>
+            <option value="他">他</option>
+          </select>
+        </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Post</button>
+
+    <button type="submit" class="btn btn-primary mt-3" id="submitBtn">
+      <span class="btn-label">Post</span>
+      <span class="btn-spinner" hidden>
+        <i class="bi bi-arrow-repeat spin"></i>
+      </span>
+    </button>
   </form>
 </div>
 
 <script>
-  const goBackPrevPage = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = '/tasks';
+  (function () {
+    const goBackPrevPage = () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/tasks';
+      }
+    };
+    window.goBackPrevPage = goBackPrevPage; // vẫn cần global vì onclick="" gọi trực tiếp
+
+    // FILE PREVIEW
+    const attachmentsInput = document.getElementById('attachmentsInput');
+    const filePreview = document.getElementById('filePreview');
+    const dropzone = document.querySelector('.dropzone');
+    let fileStore = [];
+    function renderPreview() {
+      filePreview.innerHTML = '';
+      fileStore.forEach((file, index) => {
+        const isImage = file.type.startsWith('image/');
+        const item = document.createElement('div');
+        item.className = 'file-preview-item';
+        if (isImage) {
+          const url = URL.createObjectURL(file);
+          item.innerHTML = `
+            <img src="${url}" alt="${file.name}" />
+            <button type="button" class="file-remove" data-index="${index}">
+              <i class="bi bi-x"></i>
+            </button>
+          `;
+        } else {
+          item.innerHTML = `
+            <div class="file-chip">
+              <i class="bi bi-file-earmark"></i>
+              <span>${file.name}</span>
+            </div>
+            <button type="button" class="file-remove" data-index="${index}">
+              <i class="bi bi-x"></i>
+            </button>
+          `;
+        }
+        filePreview.appendChild(item);
+      });
+
+      filePreview.querySelectorAll('.file-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.dataset.index);
+          fileStore.splice(idx, 1);
+          syncInputFiles();
+          renderPreview();
+        });
+      });
     }
-  };
+
+    function syncInputFiles() {
+      const dataTransfer = new DataTransfer();
+      fileStore.forEach(file => dataTransfer.items.add(file));
+      attachmentsInput.files = dataTransfer.files;
+    }
+
+    function addFiles(newFiles) {
+      const combined = [...fileStore, ...newFiles];
+
+      // lọc trùng theo tên + size, tránh add lại đúng 1 file nhiều lần
+      const seen = new Set();
+      fileStore = combined.filter(file => {
+        const key = `${file.name}-${file.size}-${file.lastModified}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      syncInputFiles();
+      renderPreview();
+    }
+
+    attachmentsInput.addEventListener('change', () => {
+      addFiles([...attachmentsInput.files]);
+    });
+
+    ['dragover', 'dragleave', 'drop'].forEach(evt => {
+      dropzone.addEventListener(evt, e => e.preventDefault());
+    });
+    dropzone.addEventListener('dragover', () =>
+      dropzone.classList.add('dragging'),
+    );
+    dropzone.addEventListener('dragleave', () =>
+      dropzone.classList.remove('dragging'),
+    );
+    dropzone.addEventListener('drop', e => {
+      dropzone.classList.remove('dragging');
+      addFiles([...e.dataTransfer.files]);
+    });
+
+    // SUBMIT LOADING STATE
+    const createForm = document.getElementById('createTaskForm');
+    const submitBtn = document.getElementById('submitBtn');
+    createForm.addEventListener('submit', () => {
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.btn-label').hidden = true;
+      submitBtn.querySelector('.btn-spinner').hidden = false;
+    });
+  })();
 </script>

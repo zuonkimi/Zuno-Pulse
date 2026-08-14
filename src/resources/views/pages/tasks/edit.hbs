@@ -7,6 +7,7 @@
   </div>
 
   <form
+    id="editTaskForm"
     action="/tasks/{{task._id}}/?_method=PUT"
     method="POST"
     enctype="multipart/form-data"
@@ -14,49 +15,222 @@
   >
     <input type="hidden" name="_csrf" value="{{csrfToken}}" />
     <input type="hidden" name="redirectTo" value="{{redirectTo}}" />
-
-    <div class="mb-3">
-      <input name="title" class="form-control" value="{{task.title}}" required />
+    <div class="form-group">
+      <label class="form-label" for="titleInput">
+        Title <span class="required">*</span>
+      </label>
+      <input
+        id="titleInput"
+        name="title"
+        class="form-control"
+        value="{{task.title}}"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="descriptionInput">Description</label>
+      <textarea
+        id="descriptionInput"
+        name="description"
+        class="form-control"
+      >{{task.description}}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Attachments</label>
+      {{#if task.attachments.length}}
+<div class="file-preview" id="currentAttachments">
+  {{#each task.attachments}}
+  <div class="file-preview-item" data-attachment-id="{{this._id}}">
+    {{#if (includes this.type "image")}}
+    <img src="{{this.url}}" alt="{{this.name}}" />
+    {{else}}
+    <div class="file-chip">
+      <i class="bi bi-file-earmark"></i>
+      <span>{{this.name}}</span>
+    </div>
+    {{/if}}
+    <button type="button" class="file-remove file-remove-existing" data-id="{{this._id}}">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+  {{/each}}
+</div>
+<div class="dropzone-hint mb-2">
+  Current files — click × to remove, uploading new ones below will be added alongside these
+</div>
+{{/if}}
+      <label class="dropzone" for="attachmentsInput">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <div class="dropzone-text">
+          <strong>Click to upload</strong> or drag files here
+        </div>
+        <div class="dropzone-hint">Images or documents</div>
+      </label>
+      <input
+        type="file"
+        id="attachmentsInput"
+        name="attachments"
+        multiple
+        hidden
+      />
+      <div class="file-preview" id="filePreview"></div>
     </div>
 
-    <div class="mb-3">
-      <textarea name="description" class="form-control">{{task.description}}</textarea>
-    </div>
-
-    <div class="mb-3">
-      <input type="file" name="attachments" class="form-control" multiple />
-    </div>
-
-    <div class="row g-2 mb-3">
+    <div class="row g-2">
       <div class="col-md-6">
-        <input type="date" name="deadline" class="form-control"
-          value="{{formatDateInput task.deadline}}" />
+        <div class="form-group">
+          <label class="form-label" for="deadlineInput">Deadline</label>
+          <input
+            id="deadlineInput"
+            type="date"
+            name="deadline"
+            class="form-control"
+            value="{{formatDateInput task.deadline}}"
+          />
+        </div>
       </div>
 
       <div class="col-md-6">
-        <select name="tags" class="form-control">
-          <option value="">--- Select tag ---</option>
-          <option value="請求書" {{selected "請求書" task.tags.[0]}}>請求書</option>
-          <option value="安全書類" {{selected "安全書類" task.tags.[0]}}>安全書類</option>
-          <option value="発注" {{selected "発注" task.tags.[0]}}>発注</option>
-          <option value="注文請書" {{selected "注文請書" task.tags.[0]}}>注文請書</option>
-          <option value="リモート" {{selected "リモート" task.tags.[0]}}>リモート</option>
-          <option value="領収書" {{selected "領収書" task.tags.[0]}}>領収書</option>
-          <option value="他" {{selected "他" task.tags.[0]}}>他</option>
-        </select>
+        <div class="form-group">
+          <label class="form-label" for="tagInput">Tag</label>
+          <select id="tagInput" name="tags" class="form-control">
+            <option value="">--- Select tag ---</option>
+            <option value="請求書" {{selected "請求書" task.tags.[0]}}>請求書</option>
+            <option value="安全書類" {{selected "安全書類" task.tags.[0]}}>安全書類</option>
+            <option value="発注" {{selected "発注" task.tags.[0]}}>発注</option>
+            <option value="注文請書" {{selected "注文請書" task.tags.[0]}}>注文請書</option>
+            <option value="リモート" {{selected "リモート" task.tags.[0]}}>リモート</option>
+            <option value="領収書" {{selected "領収書" task.tags.[0]}}>領収書</option>
+            <option value="他" {{selected "他" task.tags.[0]}}>他</option>
+          </select>
+        </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary">Update</button>
+
+    <button type="submit" class="btn btn-primary mt-3" id="submitBtn">
+      <span class="btn-label">Update</span>
+      <span class="btn-spinner" hidden>
+        <i class="bi bi-arrow-repeat spin"></i>
+      </span>
+    </button>
   </form>
 </div>
 
 <script>
-  // BACK
-  const goBackPrevPage = () => {
-    if (window.history.length > 1) {
-      window.history.go(-1);
-    } else {
-      window.location.href = '/tasks';
+  (function () {
+    window.goBackPrevPage = () => {
+      if (window.history.length > 1) {
+        window.history.go(-1);
+      } else {
+        window.location.href = '/tasks';
+      }
+    };
+    const attachmentsInput = document.getElementById('attachmentsInput');
+    const filePreview = document.getElementById('filePreview');
+    const dropzone = document.querySelector('.dropzone');
+    let fileStore = [];
+    function renderPreview() {
+      filePreview.innerHTML = '';
+      fileStore.forEach((file, index) => {
+        const isImage = file.type.startsWith('image/');
+        const item = document.createElement('div');
+        item.className = 'file-preview-item';
+        if (isImage) {
+          const url = URL.createObjectURL(file);
+          item.innerHTML = `
+            <img src="${url}" alt="${file.name}" />
+            <button type="button" class="file-remove" data-index="${index}">
+              <i class="bi bi-x"></i>
+            </button>
+          `;
+        } else {
+          item.innerHTML = `
+            <div class="file-chip">
+              <i class="bi bi-file-earmark"></i>
+              <span>${file.name}</span>
+            </div>
+            <button type="button" class="file-remove" data-index="${index}">
+              <i class="bi bi-x"></i>
+            </button>
+          `;
+        }
+        filePreview.appendChild(item);
+      });
+
+      filePreview.querySelectorAll('.file-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.dataset.index);
+          fileStore.splice(idx, 1);
+          syncInputFiles();
+          renderPreview();
+        });
+      });
     }
-  };
+
+    function syncInputFiles() {
+      const dataTransfer = new DataTransfer();
+      fileStore.forEach(file => dataTransfer.items.add(file));
+      attachmentsInput.files = dataTransfer.files;
+    }
+
+    function addFiles(newFiles) {
+      const combined = [...fileStore, ...newFiles];
+      const seen = new Set();
+      fileStore = combined.filter(file => {
+        const key = `${file.name}-${file.size}-${file.lastModified}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      syncInputFiles();
+      renderPreview();
+    }
+
+    attachmentsInput.addEventListener('change', () => {
+      addFiles([...attachmentsInput.files]);
+    });
+
+    ['dragover', 'dragleave', 'drop'].forEach(evt => {
+      dropzone.addEventListener(evt, e => e.preventDefault());
+    });
+    dropzone.addEventListener('dragover', () => dropzone.classList.add('dragging'));
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragging'));
+    dropzone.addEventListener('drop', e => {
+      dropzone.classList.remove('dragging');
+      addFiles([...e.dataTransfer.files]);
+    });
+    // SUBMIT LOADING STATE
+    const editForm = document.getElementById('editTaskForm');
+    const submitBtn = document.getElementById('submitBtn');
+    // REMOVE EXISTING ATTACHMENT
+const removedIds = new Set();
+document.querySelectorAll('.file-remove-existing').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+    const item = btn.closest('.file-preview-item');
+    removedIds.add(id);
+    item.style.display = 'none'; // ẩn khỏi UI ngay lập tức
+    updateRemoveAttachmentsInput();
+  });
+});
+
+function updateRemoveAttachmentsInput() {
+  // xoá các hidden input cũ trước khi render lại
+  editForm
+    .querySelectorAll('input[name="removeAttachments[]"]')
+    .forEach(el => el.remove());
+  removedIds.forEach(id => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'removeAttachments[]';
+    input.value = id;
+    editForm.appendChild(input);
+  });
+}
+    editForm.addEventListener('submit', () => {
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.btn-label').hidden = true;
+      submitBtn.querySelector('.btn-spinner').hidden = false;
+    });
+  })();
 </script>

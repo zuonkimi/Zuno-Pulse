@@ -32,7 +32,6 @@ class MessageController {
         req.user._id,
       );
       console.timeEnd('getMyConversations');
-
       console.time('getConversationById');
       const conversation = await ConversationService.getConversationById(
         req.params.conversationId,
@@ -94,19 +93,14 @@ class MessageController {
         content,
         replyTo: req.body.replyTo || null,
       });
-
       const updatedConversation = await Conversation.findById(conversationId);
-
       const receiver = updatedConversation.participants.find(
         p => p.toString() !== req.user._id.toString(),
       );
-
       const unreadCount =
         updatedConversation.unreadCount.get(receiver.toString()) || 0;
       await message.populate('sender', 'name avatar');
-
       const totalUnread = await ConversationService.getUnreadCount(receiver);
-
       const formattedMessage = formatMessages([
         {
           ...message.toObject(),
@@ -114,7 +108,6 @@ class MessageController {
           isMine: false,
         },
       ])[0];
-
       req.app
         .get('io')
         .to(conversationId.toString())
@@ -163,7 +156,6 @@ class MessageController {
           },
           lastMessage: conversation.lastMessage,
           lastMessageAt: conversation.lastMessageAt,
-
           unread: conversation.unreadCount?.[req.user._id.toString()] || 0,
         };
       });
@@ -181,21 +173,18 @@ class MessageController {
       conversation.otherUser = conversation.participants.find(
         participant => participant._id.toString() !== req.user._id.toString(),
       );
-
       conversation.otherUser.isOnline =
         socketHandler.onlineUsers?.has(conversation.otherUser._id.toString()) ||
         false;
       const isMember = conversation.participants.some(
         p => p._id.toString() === req.user._id.toString(),
       );
-
       if (!isMember) {
         return res.status(403).json({ success: false });
       }
       const rawMessages = await MessageService.getMessages(
         req.params.conversationId,
       );
-
       const messages = formatMessages(
         rawMessages.map(m => ({
           ...m,
@@ -216,16 +205,13 @@ class MessageController {
   async searchMessage(req, res, next) {
     try {
       const keyword = (req.query.q || '').toString().trim();
-
       const conversations = await ConversationService.getMyConversations(
         req.user._id,
       );
-
       let data = conversations.map(c => {
         const otherUser = c.participants.find(
           p => p._id.toString() !== req.user._id.toString(),
         );
-
         return {
           _id: c._id,
           otherUser: {
@@ -239,7 +225,6 @@ class MessageController {
           isActive: req.params?.conversationId === c._id.toString(),
         };
       });
-
       if (keyword) {
         const regex = new RegExp(keyword, 'i');
 
@@ -250,12 +235,10 @@ class MessageController {
           );
         });
       }
-
-      // 🔥 sort giống inbox
+      // sort giống inbox
       data.sort((a, b) => {
         return new Date(b.lastMessageAt) - new Date(a.lastMessageAt);
       });
-
       return res.json(data);
     } catch (err) {
       next(err);
@@ -267,25 +250,20 @@ class MessageController {
       const conversation = await Conversation.findById(
         req.params.conversationId,
       );
-
       if (!conversation) {
         return res.status(404).json({
           success: false,
         });
       }
-
       conversation.unreadCount.set(req.user._id.toString(), 0);
-
       await conversation.save();
       const totalUnread = await ConversationService.getUnreadCount(
         req.user._id,
       );
-
       req.app.get('io').to(`user_${req.user._id}`).emit('conversation_read', {
         conversationId: conversation._id.toString(),
         totalUnread,
       });
-
       return res.json({
         success: true,
       });
@@ -296,19 +274,15 @@ class MessageController {
 
   async upload(req, res, next) {
     try {
-      const { conversationId } = req.body;
-
+      const { conversationId, content = '', replyTo = null } = req.body;
       if (!req.files || !req.files.length) {
         return res.status(400).json({
           success: false,
         });
       }
-
       const messages = [];
-
-      for (const file of req.files) {
+      for (const [index, file] of req.files.entries()) {
         const isImage = file.mimetype.startsWith('image/');
-
         const message = await MessageService.sendFileMessage({
           conversation: conversationId,
           sender: req.user._id,
@@ -318,37 +292,43 @@ class MessageController {
             file._originalName ??
             Buffer.from(file.originalname, 'binary').toString('utf8'),
           fileSize: file.size,
+          // TEXT + EMOJI
+          // chỉ gắn caption vào file đầu tiên
+          content: index === 0 ? content : '',
+          // REPLY chỉ gắn vào file đầu tiên
+          replyTo: index === 0 ? replyTo : null,
         });
-
         await message.populate('sender', 'name avatar');
-
         messages.push(message);
       }
-
       const updatedConversation = await Conversation.findById(conversationId);
-
       const receiver = updatedConversation.participants.find(
         p => p.toString() !== req.user._id.toString(),
       );
-
       const unreadCount =
         updatedConversation.unreadCount.get(receiver.toString()) || 0;
-
       const totalUnread = await ConversationService.getUnreadCount(receiver);
-
       for (const message of messages) {
-        const obj = message.toObject();
-
+        const freshMessage = await MessageService.getMessageById(message._id);
+        const socketMessage = {
+          ...freshMessage,
+          conversationId: conversationId.toString(),
+          isMine:
+            freshMessage.sender._id.toString() === req.user._id.toString(),
+        };
+        // console.log(
+        //   'REALTIME MESSAGE:',
+        //   JSON.stringify(socketMessage, null, 2),
+        // );
+        // console.log(
+        //   'SERVER SOCKET CONTENT:',
+        //   JSON.stringify(socketMessage.content),
+        // );
+        // console.log('SERVER SOCKET FULL:', socketMessage);
         req.app
           .get('io')
           .to(conversationId.toString())
-          .emit('new_message', {
-            ...obj,
-            conversationId: conversationId.toString(),
-            fileName: obj.fileName
-              ? Buffer.from(obj.fileName, 'utf8').toString()
-              : obj.fileName,
-          });
+          .emit('new_message', socketMessage);
       }
       req.app
         .get('io')
@@ -371,13 +351,10 @@ class MessageController {
           lastMessage: req.files[0].mimetype.startsWith('image/')
             ? '📷 Image'
             : '📎 File',
-
           unreadCount: 0,
           totalUnread: 0,
-
           lastMessageAt: updatedConversation.lastMessageAt,
         });
-
       return res.json({
         success: true,
       });
@@ -389,18 +366,14 @@ class MessageController {
   async searchInConversation(req, res, next) {
     try {
       const { conversationId } = req.params;
-
       const keyword = (req.query.q || '').trim();
-
       if (!keyword) {
         return res.json([]);
       }
-
       const messages = await MessageService.searchMessages(
         conversationId,
         keyword,
       );
-
       return res.json(messages);
     } catch (err) {
       next(err);
@@ -413,7 +386,6 @@ class MessageController {
         req.params.messageId,
         req.user._id,
       );
-
       req.app
         .get('io')
         .to(message.conversation.toString())
@@ -446,7 +418,6 @@ class MessageController {
         req.params.messageId,
         req.user._id,
       );
-
       req.app
         .get('io')
         .to(message.conversation.toString())
@@ -455,7 +426,6 @@ class MessageController {
           userId: req.user._id.toString(),
           starred,
         });
-
       return res.json({
         success: true,
         starred,
@@ -471,14 +441,12 @@ class MessageController {
         req.params.conversationId,
         req.user._id,
       );
-
       req.app
         .get('io')
         .to(conversation._id.toString())
         .emit('conversation_deleted', {
           conversationId: conversation._id.toString(),
         });
-
       return res.json({
         success: true,
       });
@@ -493,13 +461,10 @@ class MessageController {
         req.params.conversationId,
         req.user._id,
       );
-
       req.app.get('io').to(`user_${req.user._id}`).emit('conversation_pinned', {
         conversationId: conversation._id.toString(),
-
         pinned,
       });
-
       return res.json({
         success: true,
         pinned,
@@ -524,13 +489,11 @@ class MessageController {
     try {
       const myId = req.user._id;
       const otherUserId = req.params.userId;
-
       // 1. tìm conversation 2 người
       let conversation = await Conversation.findOne({
         participants: { $all: [myId, otherUserId] },
         $expr: { $eq: [{ $size: '$participants' }, 2] },
       });
-
       // 2. nếu chưa có → tạo mới
       if (!conversation) {
         conversation = await Conversation.create({
@@ -538,7 +501,6 @@ class MessageController {
           createdAt: new Date(),
         });
       }
-
       // 3. redirect sang trang chat
       return res.redirect(`/messages/${conversation._id}`);
     } catch (err) {

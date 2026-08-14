@@ -34,7 +34,6 @@ const MessageSchema = new Schema(
       type: Boolean,
       default: false,
     },
-
     recalledAt: {
       type: Date,
       default: null,
@@ -49,12 +48,10 @@ const MessageSchema = new Schema(
         type: String,
         default: '',
       },
-
       fileUrl: {
         type: String,
         default: '',
       },
-
       messageType: {
         type: String,
         default: '',

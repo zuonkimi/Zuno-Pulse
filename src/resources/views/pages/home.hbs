@@ -10,49 +10,34 @@
   <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
       <div class="dashboard-kpi warning">
-        <div class="kpi-icon">
-          <i class="bi bi-alarm"></i>
-        </div>
-
+        <div class="kpi-icon"><i class="bi bi-alarm"></i></div>
         <div class="kpi-content">
           <div class="label">Soon</div>
           <div class="value">{{soonTasks}}</div>
         </div>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="dashboard-kpi danger">
-        <div class="kpi-icon">
-          <i class="bi bi-fire"></i>
-        </div>
-
+        <div class="kpi-icon"><i class="bi bi-fire"></i></div>
         <div class="kpi-content">
           <div class="label">Overdue</div>
           <div class="value">{{overdueTasks}}</div>
         </div>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="dashboard-kpi success">
-        <div class="kpi-icon">
-          <i class="bi bi-check-circle"></i>
-        </div>
-
+        <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
         <div class="kpi-content">
           <div class="label">Done</div>
           <div class="value">{{doneTasks}}</div>
         </div>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="dashboard-kpi secondary">
-        <div class="kpi-icon">
-          <i class="bi bi-trash3"></i>
-        </div>
-
+        <div class="kpi-icon"><i class="bi bi-trash3"></i></div>
         <div class="kpi-content">
           <div class="label">Trash</div>
           <div class="value">{{trashTask}}</div>
@@ -75,7 +60,7 @@
           <a href="/profile/{{author._id}}" class="text-decoration-none">
             <strong>{{author.name}}</strong>
           </a>
-          <div class="meta">{{formatDate deadline}}</div>
+          <div class="meta">{{timeAgo createdAt}}</div>
         </div>
       </div>
       <!-- TAGS -->
@@ -95,13 +80,21 @@
       <!-- ATTACHMENTS -->
       {{#if attachments}}
       <div class="attachments mb-2">
-        {{#each attachments}} {{#if (includes type "image")}}
-        <a href="/tasks/{{../_id}}">
-          <img src="{{url}}" class="post-img" />
-        </a>
-        {{else}}
+        {{!-- GRID ẢNH: tối đa 4 ô hiển thị, dư thì hiện +N (xử lý ở JS) --}}
+        <div
+          class="attachments-grid"
+          data-images='[{{#each attachments}}{{#if (includes type "image")}}"{{url}}"{{#unless @last}},{{/unless}}{{/if}}{{/each}}]'
+        >
+          {{#each attachments}} {{#if (includes type "image")}}
+          <div class="attachment-img-item">
+            <img src="{{url}}" class="post-img" />
+          </div>
+          {{/if}} {{/each}}
+        </div>
+        {{!-- FILE: tách riêng, không tính vào grid ảnh --}} {{#each
+        attachments}} {{#unless (includes type "image")}}
         <a href="{{url}}" target="_blank" class="file-link"> 📄 {{name}} </a>
-        {{/if}} {{/each}}
+        {{/unless}} {{/each}}
       </div>
       {{/if}}
       <!-- STATUS -->
@@ -127,14 +120,39 @@
             {{#if isLiked}}Liked{{else}}Like{{/if}}
           </span>
         </button>
-        <a href="/tasks/{{_id}}" class="text-decoration-none">
+        <button
+          type="button"
+          class="btn-view text-decoration-none"
+          data-images='[{{#each attachments}}{{#if (includes type "image")}}"{{url}}"{{#unless @last}},{{/unless}}{{/if}}{{/each}}]'
+        >
           <i class="bi bi-eye-fill"></i>
           View
-        </a>
+        </button>
       </div>
     </div>
   </div>
   {{/each}}
+</div>
+
+<!-- LIGHTBOX (dùng chung cho toàn bộ feed) -->
+<div class="image-lightbox" id="imageLightbox">
+  <button type="button" class="lightbox-close" id="lightboxClose">
+    <i class="bi bi-x-lg"></i>
+  </button>
+  <button type="button" class="lightbox-nav lightbox-prev" id="lightboxPrev">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+  <div class="lightbox-content">
+    <img id="lightboxImg" src="" alt="Post image" />
+    <div class="lightbox-empty" id="lightboxEmpty" style="display: none">
+      <i class="bi bi-image"></i>
+      <p>No image for this post</p>
+    </div>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+  <button type="button" class="lightbox-nav lightbox-next" id="lightboxNext">
+    <i class="bi bi-chevron-right"></i>
+  </button>
 </div>
 
 <!-- SCRIPT -->
@@ -157,6 +175,118 @@
       } finally {
         btn.disabled = false;
       }
+    });
+  });
+  // ===== LIGHTBOX (dùng chung toàn trang) =====
+  const lightbox = document.getElementById('imageLightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxEmpty = document.getElementById('lightboxEmpty');
+  const lightboxClose = document.getElementById('lightboxClose');
+  const lightboxPrev = document.getElementById('lightboxPrev');
+  const lightboxNext = document.getElementById('lightboxNext');
+  const lightboxCounter = document.getElementById('lightboxCounter');
+  let currentImages = [];
+  let currentIndex = 0;
+  function renderLightbox() {
+    if (currentImages.length === 0) {
+      lightboxImg.style.display = 'none';
+      lightboxEmpty.style.display = 'flex';
+      lightboxCounter.style.display = 'none';
+      lightboxPrev.style.display = 'none';
+      lightboxNext.style.display = 'none';
+      return;
+    }
+    lightboxImg.src = currentImages[currentIndex];
+    lightboxImg.style.display = 'block';
+    lightboxEmpty.style.display = 'none';
+    const hasMultiple = currentImages.length > 1;
+    lightboxCounter.style.display = hasMultiple ? 'block' : 'none';
+    lightboxCounter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+    // dừng ở đầu/cuối, KHÔNG lặp vòng
+    lightboxPrev.style.display =
+      hasMultiple && currentIndex > 0 ? 'flex' : 'none';
+    lightboxNext.style.display =
+      hasMultiple && currentIndex < currentImages.length - 1 ? 'flex' : 'none';
+  }
+  function openLightbox(images, startIndex = 0) {
+    currentImages = images || [];
+    currentIndex = startIndex;
+    renderLightbox();
+    lightbox.classList.add('active');
+  }
+  function showPrev() {
+    if (currentIndex <= 0) return;
+    currentIndex -= 1;
+    renderLightbox();
+  }
+  function showNext() {
+    if (currentIndex >= currentImages.length - 1) return;
+    currentIndex += 1;
+    renderLightbox();
+  }
+  lightboxPrev.addEventListener('click', e => {
+    e.stopPropagation();
+    showPrev();
+  });
+  lightboxNext.addEventListener('click', e => {
+    e.stopPropagation();
+    showNext();
+  });
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    lightboxImg.src = '';
+    currentImages = [];
+    currentIndex = 0;
+  }
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showPrev();
+    if (e.key === 'ArrowRight') showNext();
+  });
+  // ===== GRID ẢNH: giới hạn 4 ô, dư thì +N, click mở đúng ảnh =====
+  document.querySelectorAll('.attachments-grid').forEach(grid => {
+    let images = [];
+    try {
+      images = JSON.parse(grid.dataset.images || '[]');
+    } catch (err) {
+      images = [];
+    }
+    const items = Array.from(grid.querySelectorAll('.attachment-img-item'));
+    const MAX_VISIBLE = 4;
+    if (items.length > MAX_VISIBLE) {
+      items.forEach((item, i) => {
+        if (i >= MAX_VISIBLE) item.style.display = 'none';
+      });
+      const extra = items.length - MAX_VISIBLE;
+      const overlay = document.createElement('div');
+      overlay.className = 'attachment-more';
+      overlay.innerHTML = `<span>+${extra}</span>`;
+      items[MAX_VISIBLE - 1].appendChild(overlay);
+    }
+    items.forEach((item, index) => {
+      if (index >= MAX_VISIBLE) return;
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        openLightbox(images, index);
+      });
+    });
+  });
+  // Nút "View" ở action bar -> mở lightbox từ ảnh đầu
+  document.querySelectorAll('.btn-view').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let images = [];
+      try {
+        images = JSON.parse(btn.dataset.images || '[]');
+      } catch (err) {
+        images = [];
+      }
+      openLightbox(images, 0);
     });
   });
 </script>

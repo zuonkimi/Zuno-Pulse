@@ -4,10 +4,10 @@ function connect() {
   return mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
-      console.log('✅ MongoDB connected');
+      console.log('MongoDB connected');
     })
     .catch(error => {
-      console.error('❌ MongoDB error:', error);
+      console.error('MongoDB error:', error);
       process.exit(1);
     });
 }

@@ -30,7 +30,6 @@
     color: var(--text);
     vertical-align: middle;
   }
-
   tbody tr:hover {
     background: color-mix(in srgb, var(--primary) 5%, var(--card));
   }
@@ -60,4 +59,198 @@
   padding: 60px;
   text-align: center;
   color: var(--muted);
+}
+
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.25s ease;
+  z-index: 5000;
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.confirm-modal-box {
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  border-radius: 24px;
+  text-align: center;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transform: translateY(10px);
+  transition: 0.25s ease;
+  .confirm-modal.active & {
+    transform: translateY(0);
+  }
+}
+
+.confirm-modal-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.confirm-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.confirm-modal-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-confirm {
+  flex: 1;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-confirm-cancel {
+  background: var(--bg-secondary);
+  color: var(--text);
+  border: 1px solid var(--border);
+  &:hover {
+    background: var(--hover);
+  }
+}
+
+.btn-confirm-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: var(--text);
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.25);
+  &:hover {
+    transform: translateY(-2px);
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+#deleteModal {
+  .modal-content {
+    padding: 24px;
+    border-radius: 24px;
+    text-align: center;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.06),
+        rgba(255, 255, 255, 0.02)
+      ),
+      var(--card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+    color: var(--text);
+  }
+  .modal-body-custom {
+    padding: 8px 8px 20px;
+  }
+  .confirm-modal-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+  }
+  .modal-title-custom {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .modal-text-custom {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+  }
+  .modal-footer {
+    border-top: none;
+    padding: 0;
+    gap: 10px;
+    .btn {
+      flex: 1;
+      height: 46px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.2s ease;
+    }
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text);
+      border: 1px solid var(--border);
+      &:hover {
+        background: var(--hover);
+      }
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.25);
+      &:hover {
+        transform: translateY(-2px);
+      }
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+}
+
+// BACKDROP LÀM MỜ ĐỒNG BỘ VỚI CÁC LIGHTBOX/MODAL KHÁC TRONG APP
+.modal-backdrop.show {
+  backdrop-filter: blur(6px);
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.55);
 }

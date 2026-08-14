@@ -40,9 +40,10 @@
 .profile-header {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 22px;
   z-index: 2;
+  margin-top: 76px; /* đẩy header xuống dưới cover, chừa chỗ avatar đè lên */
 }
 
 /* AVATAR */
@@ -50,6 +51,7 @@
   width: 110px;
   height: 110px;
   flex-shrink: 0;
+  margin-top: -76px; /* kéo avatar đè lên cover */
   border-radius: 50%;
   padding: 4px;
   background: linear-gradient(
@@ -71,13 +73,14 @@
     font-size: 34px;
     font-weight: 700;
     color: var(--text);
+    border: 4px solid var(--card); /* tách avatar khỏi cover phía sau */
   }
 }
 
 /* INFO */
 .profile-info {
   flex: 1;
-  padding-top: 20px;
+  padding-top: 0;
   h2 {
     font-size: 30px;
     font-weight: 800;
@@ -139,6 +142,16 @@
   &.active {
     background: #374151;
     box-shadow: none;
+  }
+}
+
+/* Message giờ dùng chung style .btn-profile, đồng bộ với Follow/Edit */
+.btn-message {
+  background: var(--bg-secondary);
+  color: var(--text);
+  &:hover {
+    background: var(--hover);
+    transform: translateY(-1px);
   }
 }
 
@@ -224,7 +237,25 @@
     height: 220px;
     object-fit: cover;
     display: block;
+    border-radius: 24px 24px 0 0; /* khớp với border-radius của .post-card */
   }
+}
+
+/* Placeholder cho post không có ảnh, để grid không bị lệch cao thấp */
+.post-placeholder {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px 24px 0 0;
+  font-size: 40px;
+  color: var(--muted);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 198, 255, 0.06),
+    rgba(0, 198, 255, 0.02)
+  );
 }
 
 /* DROPDOWN */
@@ -367,266 +398,33 @@
   .profile-page {
     padding: 14px;
   }
-
   .profile-card {
     padding: 20px;
   }
-
   .profile-header {
     flex-direction: column;
     align-items: flex-start;
+    margin-top: 50px;
   }
-
   .profile-avatar {
     width: 88px;
     height: 88px;
+    margin-top: -50px;
   }
-
   .profile-info {
     padding-top: 0;
     h2 {
       font-size: 24px;
     }
   }
-
   .profile-stats {
     grid-template-columns: repeat(2, 1fr);
   }
-
   .post-grid {
     grid-template-columns: 1fr;
   }
-
-  .post-link img {
+  .post-link img,
+  .post-placeholder {
     height: 200px;
   }
-}
-
-/* =========================
-   EDIT PROFILE PAGE
-========================= */
-
-.edit-profile-page {
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* CARD */
-.task-form {
-  position: relative;
-  overflow: hidden;
-
-  padding: 30px;
-  border-radius: 30px;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.02)
-    ),
-    var(--card);
-
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-}
-
-/* HEADER */
-.task-list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
-
-  h2 {
-    margin: 0;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--text);
-
-    i {
-      color: var(--primary);
-    }
-  }
-
-  .btn {
-    height: 46px;
-    border-radius: 14px;
-    padding: 0 18px;
-    font-weight: 600;
-  }
-}
-
-/* FORM */
-.edit-form {
-  margin-top: 28px;
-}
-
-/* AVATAR */
-.avatar-lg {
-  width: 140px;
-  height: 140px;
-
-  border-radius: 50%;
-  overflow: hidden;
-
-  padding: 4px;
-  margin: 0 auto;
-
-  background: linear-gradient(
-    135deg,
-    rgba(0, 198, 255, 0.9),
-    rgba(37, 99, 235, 0.8)
-  );
-
-  box-shadow: 0 18px 40px rgba(0, 198, 255, 0.2);
-
-  img,
-  .avatar-placeholder {
-    width: 100%;
-    height: 100%;
-
-    border-radius: 50%;
-    object-fit: cover;
-
-    background: var(--card);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 42px;
-    font-weight: 700;
-    color: var(--text);
-  }
-}
-
-/* INPUT */
-.edit-form .form-control {
-  min-height: 54px;
-
-  border-radius: 16px;
-  border: 1px solid var(--border);
-
-  background: var(--bg-secondary);
-  color: var(--text);
-
-  transition: all 0.2s ease;
-
-  &:focus {
-    border-color: var(--primary);
-    background: var(--bg-secondary);
-    color: var(--text);
-
-    box-shadow: 0 0 0 4px rgba(0, 198, 255, 0.15);
-  }
-}
-
-/* TEXTAREA */
-.edit-form textarea.form-control {
-  min-height: 140px;
-  resize: vertical;
-  padding-top: 14px;
-}
-
-/* FILE INPUT */
-.edit-form input[type='file'] {
-  margin-top: 12px;
-}
-
-/* SAVE BUTTON */
-.edit-form .btn-primary {
-  height: 56px;
-
-  border: none;
-  border-radius: 16px;
-
-  font-size: 15px;
-  font-weight: 700;
-
-  background: linear-gradient(135deg, #00c6ff, #2563eb);
-
-  box-shadow: 0 12px 30px rgba(0, 198, 255, 0.25);
-
-  transition: all 0.25s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-
-    box-shadow: 0 16px 38px rgba(0, 198, 255, 0.3);
-  }
-}
-
-/* DARK MODE */
-[data-theme='dark'] .task-form {
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.03),
-      rgba(255, 255, 255, 0.01)
-    ),
-    rgba(15, 23, 42, 0.92);
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .edit-profile-page {
-    padding: 14px;
-  }
-
-  .task-form {
-    padding: 20px;
-    border-radius: 24px;
-  }
-
-  .task-list-header {
-    flex-direction: column;
-    align-items: flex-start;
-
-    h2 {
-      font-size: 22px;
-    }
-
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-
-  .avatar-lg {
-    width: 100px;
-    height: 100px;
-  }
-
-  .edit-form .btn-primary {
-    height: 52px;
-  }
-}
-
-.profile-buttons {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.btn-message {
-  background: #0d6efd;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  text-decoration: none;
-}
-
-.btn-message:hover {
-  background: #0b5ed7;
 }

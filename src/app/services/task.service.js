@@ -65,8 +65,9 @@ const buildQuery = (viewerId, filters = {}, options = {}) => {
   const { mode = 'user', targetUserId, followingIds = [] } = options;
   const query = {};
   query.deleted = mode === 'trash';
-  const isAdminMode = mode === 'admin';
-  if (!isAdminMode) {
+  // 'admin' và 'search' đều không giới hạn theo author (tìm toàn hệ thống)
+  const skipAuthorFilter = mode === 'admin' || mode === 'search';
+  if (!skipAuthorFilter) {
     if (mode === 'profile' && targetUserId) {
       query.author = targetUserId;
     } else if (mode === 'feed') {
@@ -77,7 +78,6 @@ const buildQuery = (viewerId, filters = {}, options = {}) => {
       query.author = viewerId;
     }
   }
-
   const trimmedKeyword = keyword ? keyword.toString().trim() : '';
   const meaningfulKeyword = trimmedKeyword
     .replace(/[^\p{L}\p{N}]/gu, '')
@@ -216,8 +216,8 @@ class TaskService {
 
   async getHomePageData(userId) {
     await connectRedis();
+    // FEED: User + Following
     const followingIds = await this.getFollowingIds(userId);
-    const visibleUserIds = [userId, ...followingIds];
     const query = buildQuery(
       userId,
       {},
@@ -231,11 +231,12 @@ class TaskService {
       .sort({ createdAt: -1 })
       .lean();
     const enriched = await enrichTasks(tasks, userId);
-    const allTasks = await Task.find({
-      author: { $in: visibleUserIds },
+    // KPI: chỉ tính task của User hiện tại
+    const myTasks = await Task.find({
+      author: userId,
       deleted: false,
     }).lean();
-    const enrichedStatsTasks = await enrichTasks(allTasks, userId);
+    const enrichedStatsTasks = await enrichTasks(myTasks, userId);
     return {
       tasks: enriched,
       stats: {
@@ -244,7 +245,7 @@ class TaskService {
         overdue: enrichedStatsTasks.filter(t => t.isOverdue).length,
         soon: enrichedStatsTasks.filter(t => t.isSoon).length,
         trash: await Task.countDocuments({
-          author: { $in: visibleUserIds },
+          author: userId,
           deleted: true,
         }),
       },

@@ -139,20 +139,35 @@ class TaskController {
       next(err);
     }
   }
-
   async updateTask(req, res, next) {
     try {
       const data = req.body;
-      const attachments = buildAttachments(req.files);
+      const newAttachments = buildAttachments(req.files);
+      // Lấy task hiện tại để biết danh sách attachments cũ
+      const currentTask = await taskService.getDetail(
+        req.params.id,
+        req.session.userId,
+      );
+      if (!currentTask) return res.status(404).send('Task not found');
+      // Danh sách _id attachment cần xoá, gửi từ form field removeAttachments[]
+      const removeIds = Array.isArray(data.removeAttachments)
+        ? data.removeAttachments
+        : [data.removeAttachments].filter(Boolean);
+      // Giữ lại file cũ KHÔNG nằm trong danh sách bị xoá
+      const remainingAttachments = (currentTask.attachments || []).filter(
+        att => !removeIds.includes(att._id.toString()),
+      );
+      // Gộp file cũ còn lại + file mới upload
+      const finalAttachments = [...remainingAttachments, ...newAttachments];
       const updateData = {
         title: data.title,
         description: data.description,
         tags: Array.isArray(data.tags)
           ? data.tags
           : [data.tags].filter(Boolean),
+        attachments: finalAttachments,
       };
       if (data.deadline) updateData.deadline = new Date(data.deadline);
-      if (attachments.length > 0) updateData.attachments = attachments;
       await taskService.updateTask(
         req.params.id,
         req.session.userId,

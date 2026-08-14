@@ -40,16 +40,12 @@
                       Restore
                     </button>
                   </form>
-
                   <!-- FORCE DELETE -->
                   <form
                     method="POST"
                     action="/admin/tasks/{{_id}}/force"
-                    onsubmit="
-                      return confirm(
-                        'Are you sure you want to permanently delete this task?',
-                      );
-                    "
+                    class="force-delete-form"
+                    data-task-title="{{title}}"
                   >
                     <button type="submit" class="btn btn-sm btn-danger">
                       Delete Forever
@@ -71,3 +67,69 @@
     </div>
   </div>
 </div>
+
+<!-- CUSTOM CONFIRM MODAL -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-modal-box">
+    <div class="confirm-modal-icon">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <h4 class="confirm-modal-title">Delete permanently?</h4>
+    <p class="confirm-modal-text" id="confirmModalText">
+      This action cannot be undone.
+    </p>
+    <div class="confirm-modal-actions">
+      <button
+        type="button"
+        class="btn-confirm btn-confirm-cancel"
+        id="confirmCancelBtn"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn-confirm btn-confirm-danger"
+        id="confirmOkBtn"
+      >
+        Delete Forever
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const modal = document.getElementById('confirmModal');
+    const modalText = document.getElementById('confirmModalText');
+    const cancelBtn = document.getElementById('confirmCancelBtn');
+    const okBtn = document.getElementById('confirmOkBtn');
+    let pendingForm = null;
+    document.querySelectorAll('.force-delete-form').forEach(form => {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        pendingForm = form;
+        const title = form.dataset.taskTitle || 'this task';
+        modalText.textContent = `"${title}" will be permanently deleted. This action cannot be undone.`;
+        modal.classList.add('active');
+      });
+    });
+    function closeModal() {
+      modal.classList.remove('active');
+      pendingForm = null;
+    }
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('active'))
+        closeModal();
+    });
+    okBtn.addEventListener('click', () => {
+      if (pendingForm) {
+        okBtn.disabled = true;
+        pendingForm.submit();
+      }
+    });
+  })();
+</script>

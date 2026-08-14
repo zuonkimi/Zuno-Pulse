@@ -8,30 +8,20 @@
   gap: 12px;
 }
 
-/* ================= POPUP ================= */
-
 .chat-popup {
   width: 340px;
   height: 500px;
-
   display: flex;
   flex-direction: column;
-
   background: var(--card);
-
   border: 1px solid var(--border);
   border-bottom: none;
-
   border-radius: 12px 12px 0 0;
-
   overflow: hidden;
-
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.18),
     0 2px 10px rgba(0, 0, 0, 0.08);
 }
-
-/* ================= HEADER ================= */
 
 .chat-popup-header {
   position: relative;
@@ -56,7 +46,6 @@
 .popup-user img {
   width: 36px;
   height: 36px;
-
   border-radius: 50%;
   object-fit: cover;
 }
@@ -80,7 +69,6 @@
   display: flex;
   align-items: center;
   gap: 4px;
-
   font-size: 11px;
   color: var(--muted);
 }
@@ -88,23 +76,18 @@
 .status-dot {
   width: 8px;
   height: 8px;
-
   border-radius: 50%;
-
   background: var(--success);
 }
 
 .close-popup {
   width: 34px;
   height: 34px;
-
   border: none;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: transparent;
   color: var(--text);
   transition: 0.2s;
@@ -114,11 +97,8 @@
   }
 }
 
-/* ================= BODY ================= */
-
 .chat-popup-body {
   flex: 1;
-
   overflow-y: auto;
   overflow-x: visible;
   display: flex;
@@ -126,37 +106,59 @@
   min-height: 0;
   padding: 12px;
   gap: 8px;
-
   background: var(--bg-secondary);
 }
 
 /* DATE */
-
 .popup-date-label {
   align-self: center;
-
   margin: 8px 0;
-
   padding: 4px 10px;
-
   border-radius: 999px;
-
   font-size: 11px;
-
   background: var(--card);
   border: 1px solid var(--border);
-
   color: var(--muted);
 }
 
 /* MESSAGE */
-
 .popup-msg {
   display: flex;
   align-items: flex-end;
   gap: 6px;
   position: relative;
   width: 100%;
+  &:hover .popup-msg-menu-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.popup-msg-actions {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  /* không còn margin/order chiếm layout */
+}
+.popup-msg:not(.mine) .popup-msg-actions {
+  right: -34px; /* đặt hẳn ra ngoài bong bóng, bên phải */
+}
+.popup-msg.mine .popup-msg-actions {
+  left: -34px; /* bên trái với tin nhắn của mình */
+}
+
+.popup-msg-menu-btn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s;
 }
 
 .popup-msg.mine {
@@ -166,15 +168,12 @@
 .msg-avatar {
   width: 26px;
   height: 26px;
-
   border-radius: 50%;
   object-fit: cover;
-
   flex-shrink: 0;
 }
 
 /* CONTENT */
-
 .popup-content {
   display: flex;
   flex-direction: column;
@@ -187,7 +186,6 @@
 }
 
 /* BUBBLE */
-
 .popup-bubble {
   display: inline-flex;
   flex-direction: column;
@@ -197,16 +195,12 @@
   width: fit-content;
   overflow: visible;
   padding: 8px 12px;
-
   border-radius: 18px;
-
   font-size: 13px;
   line-height: 1.45;
-
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: break-word;
-
   background: var(--card-hover);
   color: var(--text);
 }
@@ -214,10 +208,8 @@
   display: block;
   max-width: 220px;
   max-height: 260px;
-
   border-radius: 12px;
   object-fit: cover;
-
   margin: 0;
 }
 
@@ -225,20 +217,14 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-
   font-size: 12px;
   padding: 6px 10px;
-
   border-radius: 12px;
-
   background: rgba(0, 0, 0, 0.05);
-
   max-width: 200px;
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-
   text-decoration: none;
   color: inherit;
 }
@@ -261,7 +247,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-
   padding: 0 0 8px;
   width: 100%;
   max-height: 90px;
@@ -270,15 +255,11 @@
 
 .preview-item {
   position: relative;
-
   width: 64px;
   height: 64px;
-
   border-radius: 12px;
   overflow: hidden;
-
   border: 1px solid var(--border);
-
   flex-shrink: 0;
 }
 
@@ -290,21 +271,14 @@
 
 .preview-file {
   max-width: 220px;
-
   height: 40px;
-
   display: flex;
   align-items: center;
-
   padding: 0 32px 0 12px;
-
   border-radius: 10px;
-
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-
   font-size: 12px;
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -312,136 +286,106 @@
 
 .preview-remove {
   position: absolute;
-
   top: 4px;
   right: 4px;
-
   width: 18px;
   height: 18px;
-
   border: none;
   border-radius: 50%;
-
   background: rgba(0, 0, 0, 0.75);
   color: white;
-
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 10;
 }
 .popup-input-row {
   width: 100%;
-
   display: flex;
   align-items: flex-end;
   gap: 6px;
 }
 .preview-item.file {
   position: relative;
-
   max-width: 220px;
 }
 .popup-time {
   margin-top: 3px;
-
   font-size: 10px;
   color: var(--muted);
 }
 .popup-error {
   display: none;
-
   padding: 6px 10px;
-
   border-radius: 8px;
-
   font-size: 12px;
-
   background: #ffe5e5;
   color: #d93025;
 }
-/* ================= FOOTER ================= */
 
 .chat-popup-footer {
   margin: 0;
-
   display: flex;
   flex-direction: column;
-
   gap: 8px;
-
   padding: 8px 10px;
-
   border-top: 1px solid var(--border);
-
   flex-shrink: 0;
 }
 
 .chat-tools {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .tool-btn {
   width: 30px;
   height: 30px;
-
   border: none;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: transparent;
-  color: var(--primary);
+  color: var(--muted);
   cursor: pointer;
+  transition: 0.15s;
+  &:hover {
+    background: var(--hover-bg, var(--hover));
+    color: var(--primary);
+  }
 }
 
 .popup-input {
   flex: 1;
-
   resize: none;
   overflow-y: auto;
-
   min-height: 38px;
   max-height: 120px;
-
   padding: 10px 14px;
-
   border: none;
   border-radius: 20px;
-
   background: var(--input-bg);
-
   outline: none;
-
   color: var(--text);
-
   line-height: 1.4;
 }
 
 .popup-send-btn {
   width: 36px;
   height: 36px;
-
   border: none;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: var(--primary);
   color: #fff;
-
   cursor: pointer;
-
   flex-shrink: 0;
+  transition: filter 0.15s;
   &:hover {
     filter: brightness(1.08);
   }
@@ -455,67 +399,35 @@
 .chat-popup-footer .tool-btn {
   width: 28px;
   height: 28px;
-
   border: none;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: transparent;
-
   cursor: pointer;
-
   color: var(--muted);
 }
-
 .chat-popup-footer .tool-btn:hover {
   background: var(--hover-bg);
 }
-
-.popup-send-btn {
-  width: 38px;
-  height: 38px;
-
-  border: none;
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: var(--primary);
-  color: #fff;
-
-  cursor: pointer;
-
-  flex-shrink: 0;
-}
-
-/* ================= SCROLL ================= */
-
+// Scrollbar
 .chat-popup-body::-webkit-scrollbar {
   width: 6px;
 }
-
 .chat-popup-body::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 999px;
 }
-
-/* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
   #chatPopups {
     left: 0;
     right: 0;
   }
-
   .chat-popup {
     width: 100%;
     height: calc(100vh - 70px);
-
     border-radius: 0;
   }
 }
@@ -538,79 +450,27 @@
   left: 10px;
   z-index: 99999;
 }
-/* =========================
-   MESSAGE MENU
-========================= */
 
-.popup-msg-actions {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-
-  margin-left: 6px;
-  margin-right: 6px;
-}
-
-/* message của mình -> menu nằm bên trái bubble */
-.popup-msg.mine .popup-msg-actions {
-  order: -1;
-}
-
-.popup-msg-menu-btn {
-  width: 28px;
-  height: 28px;
-
-  border: none;
-  background: transparent;
-
-  border-radius: 8px;
-
-  cursor: pointer;
-
-  color: var(--text);
-
-  opacity: 0;
-
-  transition: 0.2s;
-}
-
-/* hover message mới hiện */
-.popup-msg:hover .popup-msg-menu-btn {
-  opacity: 1;
-}
 .popup-msg.mine .popup-msg-menu {
   left: auto;
   right: 0;
 }
 .popup-msg-menu {
   position: absolute;
-
   top: 36px;
   left: 0;
-
   min-width: 160px;
-
   display: flex;
   flex-direction: column;
-
   padding: 6px;
-
   border-radius: 12px;
-
   background: var(--card);
-
   border: 1px solid var(--border);
-
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-
   opacity: 0;
   visibility: hidden;
-
   transform: translateY(-6px);
-
   transition: 0.15s ease;
-
   z-index: 99999;
 }
 
@@ -622,24 +482,15 @@
 
 .popup-action {
   border: none;
-
   background: transparent;
-
   padding: 10px 12px;
-
   border-radius: 8px;
-
   text-align: left;
-
   font-size: 13px;
-
   color: var(--text);
-
   cursor: pointer;
-
   transition: 0.15s;
 }
-
 .popup-action:hover {
   background: var(--hover);
 }
@@ -647,7 +498,6 @@
 .popup-action.recall {
   color: #e53935;
 }
-
 .popup-action.recall:hover {
   background: rgba(229, 57, 53, 0.08);
 }
@@ -696,7 +546,6 @@
   display: none;
   align-items: center;
   gap: 6px;
-
   padding: 6px 10px;
   border-bottom: 1px solid var(--border);
   background: var(--card);
@@ -706,24 +555,18 @@
 .popup-search-btn {
   width: 34px;
   height: 34px;
-
   border: none;
   border-radius: 8px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: transparent;
   color: var(--text);
-
   cursor: pointer;
   transition: 0.15s;
-
   &:hover {
     background: var(--hover);
   }
-
   i {
     font-size: 16px;
   }
@@ -732,13 +575,10 @@
   flex: 1;
   height: 30px;
   padding: 0 10px;
-
   border: 1px solid var(--border);
   border-radius: 8px;
-
   background: var(--input-bg);
   color: var(--text);
-
   outline: none;
   font-size: 13px;
 }
@@ -746,13 +586,10 @@
 .popup-search-next {
   width: 28px;
   height: 28px;
-
   border: none;
   border-radius: 6px;
-
   background: var(--card-hover);
   color: var(--text);
-
   cursor: pointer;
 }
 
@@ -787,25 +624,19 @@
 .popup-search-clear {
   width: 26px;
   height: 26px;
-
   border: none;
   border-radius: 6px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: transparent;
   color: var(--muted);
-
   cursor: pointer;
   transition: 0.15s;
-
   &:hover {
     background: var(--hover);
     color: var(--text);
   }
-
   i {
     font-size: 14px;
   }
@@ -819,7 +650,6 @@
   background: transparent;
   cursor: pointer;
   color: var(--text);
-
   &:hover {
     background: var(--hover);
   }
@@ -830,18 +660,14 @@
   top: 100%;
   right: 0;
   margin-top: 6px;
-
   min-width: 180px;
-
   display: flex;
   flex-direction: column;
   padding: 6px;
-
   border-radius: 12px;
   background: var(--card);
   border: 1px solid var(--border);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-
   opacity: 0;
   visibility: hidden;
   transform: translateY(-6px);
@@ -867,4 +693,32 @@
   &:hover {
     background: var(--hover);
   }
+}
+
+.popup-image-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  &.active {
+    display: flex;
+  }
+  img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+}
+
+.popup-lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
 }
