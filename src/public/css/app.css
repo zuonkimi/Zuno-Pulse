@@ -2776,6 +2776,7 @@ a:hover {
   display: grid;
   grid-template-columns: 7fr 5fr;
   gap: 24px;
+  align-items: start; /* không ép 2 cột phải cao bằng nhau -> tránh khoảng trắng thừa */
 }
 
 .task-left {
@@ -2820,8 +2821,6 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-height: 320px;
-  overflow: hidden;
 }
 
 /* HEADER */
@@ -2913,9 +2912,11 @@ a:hover {
 .task-right {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 140px);
-  min-height: 600px;
-  max-height: 85vh;
+  position: sticky;
+  top: 100px; /* dưới navbar (sticky, cao 72px + top 14px) */
+  height: calc(100vh - 120px);
+  max-height: 720px;
+  min-height: 420px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -3150,6 +3151,7 @@ a:hover {
     gap: 16px;
   }
   .task-right {
+    position: static;
     height: auto;
     max-height: none;
     min-height: 500px;
