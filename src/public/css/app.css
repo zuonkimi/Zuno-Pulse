@@ -7242,6 +7242,7 @@ body.lightbox-open {
 }
 
 .chat-popup {
+  position: relative; /* để scroll-to-bottom-btn định vị theo khung này */
   width: 340px;
   height: 500px;
   display: flex;
@@ -7289,11 +7290,15 @@ body.lightbox-open {
 .popup-user-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .popup-name {
   font-size: 13px;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .popup-status {
@@ -7331,12 +7336,12 @@ body.lightbox-open {
 .chat-popup-body {
   flex: 1;
   overflow-y: auto;
-  overflow-x: visible;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
   padding: 12px;
-  gap: 8px;
+  gap: 10px;
   background: var(--bg-secondary);
 }
 
@@ -7355,7 +7360,7 @@ body.lightbox-open {
 /* MESSAGE */
 .popup-msg {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
   position: relative;
   width: 100%;
@@ -7365,25 +7370,39 @@ body.lightbox-open {
   pointer-events: auto;
 }
 
+/* actions định vị tuyệt đối theo popup-content, không chiếm chỗ trong luồng */
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  max-width: 72%;
+  min-width: 0;
+}
+
+.popup-msg.mine .popup-content {
+  align-items: flex-end;
+}
+
 .popup-msg-actions {
   position: absolute;
-  top: 0;
+  top: 50%;
+  margin-top: -12px;
   display: flex;
   align-items: center;
-  /* không còn margin/order chiếm layout */
+  z-index: 100;
 }
 
 .popup-msg:not(.mine) .popup-msg-actions {
-  right: -34px; /* đặt hẳn ra ngoài bong bóng, bên phải */
+  right: -30px;
 }
 
 .popup-msg.mine .popup-msg-actions {
-  left: -34px; /* bên trái với tin nhắn của mình */
+  left: -30px;
 }
 
 .popup-msg-menu-btn {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
   border-radius: 8px;
@@ -7392,6 +7411,13 @@ body.lightbox-open {
   opacity: 0;
   pointer-events: none;
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-msg-menu-btn:hover {
+  background: var(--hover);
+  color: var(--text);
 }
 
 .popup-msg.mine {
@@ -7404,32 +7430,22 @@ body.lightbox-open {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  align-self: flex-end;
 }
 
 /* CONTENT */
-.popup-content {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  max-width: 75%;
-}
-
-.popup-msg.mine .popup-content {
-  align-items: flex-end;
-}
-
 /* BUBBLE */
 .popup-bubble {
   display: inline-flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   position: relative;
   max-width: 100%;
   width: fit-content;
   overflow: visible;
   padding: 8px 12px;
-  border-radius: 18px;
-  font-size: 13px;
+  border-radius: 16px;
+  font-size: 13.5px;
   line-height: 1.45;
   white-space: pre-wrap;
   overflow-wrap: break-word;
@@ -7465,8 +7481,8 @@ body.lightbox-open {
 
 .popup-bubble.text {
   display: inline-block;
-  padding: 6px 12px 7px;
-  line-height: 1.35;
+  padding: 7px 12px;
+  line-height: 1.4;
 }
 
 .popup-bubble.media {
@@ -7478,6 +7494,50 @@ body.lightbox-open {
 .popup-msg.mine .popup-bubble {
   background: var(--primary);
   color: #fff;
+}
+
+.message-text {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* REPLY QUOTE (trích dẫn tin nhắn được reply, hiện bên trong bubble) */
+.reply-message-preview {
+  display: block;
+  margin: -2px -2px 6px;
+  padding: 5px 9px;
+  border-left: 2.5px solid var(--primary);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+  cursor: pointer;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.reply-message-preview:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.popup-msg.mine .reply-message-preview {
+  border-left-color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.85);
+}
+.popup-msg.mine .reply-message-preview:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.reply-highlight {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 12px;
 }
 
 .popup-preview {
@@ -7632,28 +7692,6 @@ body.lightbox-open {
   filter: brightness(1.08);
 }
 
-.chat-popup-footer .chat-tools {
-  display: flex;
-  gap: 4px;
-}
-
-.chat-popup-footer .tool-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  cursor: pointer;
-  color: var(--muted);
-}
-
-.chat-popup-footer .tool-btn:hover {
-  background: var(--hover-bg);
-}
-
 .chat-popup-body::-webkit-scrollbar {
   width: 6px;
 }
@@ -7690,46 +7728,47 @@ body.lightbox-open {
   z-index: 99999;
 }
 
-.popup-msg.mine .popup-msg-menu {
-  left: auto;
-  right: 0;
-}
-
 .popup-msg-menu {
-  position: absolute;
-  top: 36px;
-  left: 0;
-  min-width: 160px;
+  position: fixed;
+  min-width: 150px;
   display: flex;
   flex-direction: column;
   padding: 6px;
   border-radius: 12px;
   background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-6px);
-  transition: 0.15s ease;
-  z-index: 99999;
+  transform: none;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 999999;
 }
 
+/* Không cần left/right theo mine nữa */
+.popup-msg.mine .popup-msg-menu {
+  left: auto;
+  right: auto;
+}
+
+/* Khi show */
 .popup-msg-menu.show {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: none;
 }
 
 .popup-action {
   border: none;
   background: transparent;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: 8px;
   text-align: left;
   font-size: 13px;
   color: var(--text);
   cursor: pointer;
   transition: 0.15s;
+  white-space: nowrap;
 }
 
 .popup-action:hover {
@@ -7849,7 +7888,7 @@ body.lightbox-open {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -7858,12 +7897,6 @@ body.lightbox-open {
   display: flex;
   align-items: center;
   min-width: 70px;
-}
-
-.popup-search-count {
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
 }
 
 .popup-search-clear {
@@ -7917,7 +7950,7 @@ body.lightbox-open {
   visibility: hidden;
   transform: translateY(-6px);
   transition: 0.15s ease;
-  z-index: 99999;
+  z-index: 200;
 }
 
 .popup-header-menu.show {
@@ -7966,6 +7999,36 @@ body.lightbox-open {
   border: none;
   color: #fff;
   font-size: 1.5rem;
+}
+
+.scroll-to-bottom-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 70px; /* JS sẽ tự cập nhật theo chiều cao footer */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  z-index: 50;
+}
+.scroll-to-bottom-btn:hover {
+  background: var(--hover);
+}
+.scroll-to-bottom-btn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 /*# sourceMappingURL=app.css.map */

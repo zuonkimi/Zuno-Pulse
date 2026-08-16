@@ -4,7 +4,7 @@ const ConversationService = require('../app/services/features/conversation.servi
 
 module.exports = io => {
   io.on('connection', socket => {
-    // // console.log('User connected:', socket.id);
+    // console.log('User connected:', socket.id);
     // USER ROOM
     const userId = socket.handshake.auth?.userId;
     if (userId) {

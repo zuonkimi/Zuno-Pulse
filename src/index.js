@@ -46,7 +46,7 @@ app.set('trust proxy', 1);
 // is service static files (css, js, images...) in public folder
 app.use(express.static(path.join(__dirname, 'public')));
 // use ratelimit to send 100 requests per 15 min
-// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 // read cookie from request and convert to object type
 app.use(cookieParser());
 // create session ID -> save session in server -> send cookie with session ID to browser -> browser send cookie -> server find session by ID in cookie -> get session data

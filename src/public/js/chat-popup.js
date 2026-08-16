@@ -6,7 +6,7 @@ let popupSearchIndex = -1;
 let popupSearchKeyword = '';
 
 async function openChatPopup(conversationId, name, avatar, otherUserId) {
-  console.log('otherUserId:', otherUserId);
+  // console.log('otherUserId:', otherUserId);
   function escapeHtml(str = '') {
     return str
       .replace(/&/g, '&amp;')
@@ -376,9 +376,9 @@ async function openChatPopup(conversationId, name, avatar, otherUserId) {
       `.popup-bubble[data-message-id="${messageId}"]`,
     );
     if (!bubble) return;
-    console.log(bubble.innerHTML);
+    // console.log(bubble.innerHTML);
     let previewText = '';
-    const textEl = bubble.querySelector('.text');
+    const textEl = bubble.querySelector('.message-text');
     if (textEl) {
       previewText = textEl.textContent.trim();
     }
@@ -422,12 +422,83 @@ async function openChatPopup(conversationId, name, avatar, otherUserId) {
     if (!btn) return;
     e.stopPropagation();
     const menu = btn.nextElementSibling;
+    if (!menu) return;
+    // Đóng các menu khác
     document.querySelectorAll('.popup-msg-menu.show').forEach(m => {
       if (m !== menu) {
         m.classList.remove('show');
+        m.style.left = '';
+        m.style.top = '';
       }
     });
-    menu.classList.toggle('show');
+    // Nếu menu đang mở -> đóng
+    if (menu.classList.contains('show')) {
+      menu.classList.remove('show');
+      menu.style.left = '';
+      menu.style.top = '';
+      return;
+    }
+    // Mở menu trước
+    menu.classList.add('show');
+    // Đợi browser render menu xong rồi mới tính kích thước
+    requestAnimationFrame(() => {
+      const btnRect = btn.getBoundingClientRect();
+      const menuRect = menu.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const gap = 6;
+      const margin = 8;
+      let top;
+      let left;
+      // TÍNH VỊ TRÍ DỌC
+      const spaceBelow = viewportHeight - btnRect.bottom - margin;
+      const spaceAbove = btnRect.top - margin;
+      // Có đủ chỗ phía dưới
+      if (spaceBelow >= menuRect.height + gap) {
+        top = btnRect.bottom + gap;
+      }
+      // Không đủ phía dưới nhưng đủ phía trên
+      else if (spaceAbove >= menuRect.height + gap) {
+        top = btnRect.top - menuRect.height - gap;
+      }
+      // Không đủ cả hai phía
+      else {
+        if (spaceBelow >= spaceAbove) {
+          top = viewportHeight - menuRect.height - margin;
+        } else {
+          top = margin;
+        }
+      }
+      // TÍNH VỊ TRÍ NGANG
+      const isMine = btn.closest('.popup-msg.mine');
+      if (isMine) {
+        // Tin nhắn của mình -> ưu tiên mở bên trái nút ...
+        left = btnRect.left - menuRect.width - gap;
+        // Nếu tràn trái -> mở sang phải
+        if (left < margin) {
+          left = btnRect.right + gap;
+        }
+      } else {
+        // Tin nhắn người khác -> ưu tiên mở bên phải
+        left = btnRect.right + gap;
+        // Nếu tràn phải -> mở sang trái
+        if (left + menuRect.width > viewportWidth - margin) {
+          left = btnRect.left - menuRect.width - gap;
+        }
+      }
+      // KHÔNG CHO MENU RA NGOÀI MÀN HÌNH
+      left = Math.max(
+        margin,
+        Math.min(left, viewportWidth - menuRect.width - margin),
+      );
+      top = Math.max(
+        margin,
+        Math.min(top, viewportHeight - menuRect.height - margin),
+      );
+      // GÁN VỊ TRÍ
+      menu.style.left = `${left}px`;
+      menu.style.top = `${top}px`;
+    });
   });
   container.addEventListener('click', e => {
     const preview = e.target.closest('.reply-message-preview');
@@ -658,7 +729,6 @@ async function openChatPopup(conversationId, name, avatar, otherUserId) {
       </div>
     `;
     }
-
     // IMAGE
     if (message.type === 'image' && message.fileUrl) {
       html += `
@@ -688,11 +758,7 @@ async function openChatPopup(conversationId, name, avatar, otherUserId) {
     }
     // TEXT + EMOJI
     if (message.content) {
-      html += `
-      <div class="message-text">
-        ${escapeHtml(message.content)}
-      </div>
-    `;
+      html += `<div class="message-text">${escapeHtml(message.content)}</div>`;
     }
     return html;
   }
@@ -1021,5 +1087,5 @@ document.addEventListener('click', e => {
     card.dataset.userAvatar,
     card.dataset.popupUserId,
   );
-  console.log(card.dataset);
+  // console.log(card.dataset);
 });
