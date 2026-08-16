@@ -1,24 +1,22 @@
 .task-detail {
-  max-width: 1100px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: $spacing-lg 0;
-}
-
-.task-main {
-  display: grid;
-  grid-template-columns: 7fr 5fr;
+  padding: $spacing-lg 0 $spacing-3xl;
+  display: flex;
+  flex-direction: column;
   gap: $spacing-xl;
-  align-items: start; /* không ép 2 cột phải cao bằng nhau -> tránh khoảng trắng thừa */
 }
 
-.task-left {
+/* ==============================
+   POST CARD (media + content)
+   ============================== */
+.task-post-card,
+.task-comments-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: $radius-lg;
   overflow: hidden;
   box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
   transition:
     background 0.25s ease,
     border 0.25s ease,
@@ -30,13 +28,12 @@
   width: 100%;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
-  /* bỏ aspect-ratio và overflow:hidden — để chiều cao tự co theo nội dung bên trong (grid ảnh + video) */
 }
 
 .no-media,
 .file-placeholder {
   width: 100%;
-  min-height: 320px;
+  min-height: 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,7 +46,6 @@
 /* CONTENT */
 .task-content {
   padding: $spacing-xl;
-  flex: 1;
 }
 
 .task-info {
@@ -66,8 +62,8 @@
 }
 
 .task-header .avatar {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
@@ -83,21 +79,21 @@
 }
 
 .name-line strong {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
 }
 
 .name-line span {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--muted);
 }
 
 /* TITLE */
 .title {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 700;
+  margin: 4px 0 0;
+  font-size: 1.5rem;
+  font-weight: 800;
   line-height: 1.35;
   color: var(--text);
   word-break: break-word;
@@ -123,48 +119,99 @@
 
 /* DESCRIPTION */
 .task-desc {
-  overflow-y: auto;
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.75;
   color: var(--text-secondary);
   word-break: break-word;
-  padding-right: 4px;
-  @include scrollbar;
+  white-space: pre-line;
 }
 
-.task-right {
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 100px; /* dưới navbar (sticky, cao 72px + top 14px) */
-  height: calc(100vh - 120px);
-  max-height: 720px;
-  min-height: 420px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: $radius-lg;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  transition:
-    background 0.25s ease,
-    border 0.25s ease;
-}
-
+/* ==============================
+   COMMENTS CARD
+   ============================== */
 .comment-box {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
-/* COMMENT LIST */
-.comment-list {
+.comments-header {
+  padding: 20px 24px 4px;
+  h4 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    i {
+      color: var(--primary);
+    }
+  }
+}
+
+/* INPUT (đặt ở đầu khung bình luận) */
+.comment-input-box {
+  padding: 16px 24px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.comment-input-box input {
   flex: 1;
-  overflow-y: auto;
-  padding: $spacing-lg;
-  min-height: 400px;
-  background: transparent;
-  @include scrollbar;
+  padding: 14px 20px;
+  border-radius: 9999px;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text);
+  transition:
+    border 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.comment-input-box input::placeholder {
+  color: var(--muted);
+}
+
+.comment-input-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--card);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.comment-input-box button {
+  height: 48px;
+  width: 48px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary) 75%, white),
+    var(--primary)
+  );
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 22%, transparent);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.comment-input-box button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+/* COMMENT LIST (trôi tự nhiên theo trang, không bo khung cuộn riêng) */
+.comment-list {
+  padding: 8px 24px 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* COMMENT ITEM */
@@ -275,64 +322,6 @@
   color: var(--muted);
 }
 
-/* INPUT */
-.comment-input-box {
-  padding: $spacing-lg;
-  border-top: 1px solid var(--border);
-  background: var(--card);
-  display: flex;
-  gap: $spacing-sm;
-}
-
-.comment-input-box input {
-  flex: 1;
-  padding: 16px 20px;
-  border-radius: 9999px;
-  min-height: 54px;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text);
-  transition:
-    border 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-.comment-input-box input::placeholder {
-  color: var(--muted);
-}
-
-.comment-input-box input:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: var(--card);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
-}
-
-/* BUTTON */
-.comment-input-box button {
-  height: 54px;
-  width: 54px;
-  border-radius: 9999px;
-  border: none;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary) 75%, white),
-    var(--primary)
-  );
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 22%, transparent);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.comment-input-box button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 14px 30px color-mix(in srgb, var(--primary) 28%, transparent);
-}
-
 /* REPLY */
 .reply-list {
   margin-top: 12px;
@@ -347,17 +336,21 @@
 }
 
 /* EMPTY */
-.comment-list.empty {
+.comment-list-empty {
+  padding: 40px 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
   text-align: center;
   color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 [data-theme='dark'] {
-  .task-left,
-  .task-right {
+  .task-post-card,
+  .task-comments-card {
     background: rgba(15, 23, 42, 0.78);
     border-color: rgba(255, 255, 255, 0.06);
   }
@@ -365,33 +358,30 @@
   .comment-item:hover {
     background: rgba(255, 255, 255, 0.03);
   }
-
-  .comment-input-box {
-    background: rgba(15, 23, 42, 0.82);
-  }
-}
-
-@include respond(lg) {
-  .task-main {
-    grid-template-columns: 1fr;
-    gap: $spacing-lg;
-  }
-
-  .task-right {
-    position: static;
-    height: auto;
-    max-height: none;
-    min-height: 500px;
-  }
 }
 
 @include respond(md) {
   .task-detail {
     padding: $spacing-md;
+    gap: $spacing-lg;
   }
 
   .task-content {
     padding: $spacing-lg;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .comments-header {
+    padding: 16px 18px 4px;
+  }
+
+  .comment-input-box,
+  .comment-list {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 }
 
@@ -400,7 +390,7 @@
   display: grid;
   gap: 3px;
   width: 100%;
-  height: 460px;
+  height: 420px;
   grid-template-columns: 1fr;
   background: var(--border); /* tạo đường phân cách mảnh giữa các ảnh */
   overflow: hidden;
@@ -457,7 +447,7 @@
 /* VIDEO / FILE nằm dưới grid ảnh */
 .task-video {
   width: 100%;
-  max-height: 460px;
+  max-height: 420px;
   object-fit: cover;
   display: block;
   margin-top: 4px;
@@ -465,7 +455,7 @@
 
 @media (max-width: 576px) {
   .task-media-grid {
-    height: 320px;
+    height: 300px;
   }
 }
 

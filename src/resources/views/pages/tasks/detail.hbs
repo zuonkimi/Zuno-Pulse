@@ -1,160 +1,167 @@
 <div class="task-detail">
-  <div class="task-main">
-    {{!-- LEFT COLUMN --}}
-    <div class="task-left">
-      <!-- MEDIA -->
-      <div class="task-media">
-        {{#if task.attachments}} {{!-- GRID ẢNH --}}
-        <div
-          class="task-media-grid"
-          id="taskMediaGrid"
-          data-images='[{{#each task.attachments}}{{#if (includes type "image")}}"{{url}}"{{#unless @last}},{{/unless}}{{/if}}{{/each}}]'
-        >
-          {{#each task.attachments}} {{#if (includes type "image")}}
-          <div class="task-media-item">
-            <img src="{{url}}" alt="{{name}}" />
+  {{!-- POST CARD --}}
+  <div class="task-post-card">
+    <!-- MEDIA -->
+    <div class="task-media">
+      {{#if task.attachments}} {{!-- GRID ẢNH --}}
+      <div
+        class="task-media-grid"
+        id="taskMediaGrid"
+        data-images='[{{#each task.attachments}}{{#if (includes type "image")}}"{{url}}"{{#unless @last}},{{/unless}}{{/if}}{{/each}}]'
+      >
+        {{#each task.attachments}} {{#if (includes type "image")}}
+        <div class="task-media-item">
+          <img src="{{url}}" alt="{{name}}" />
+        </div>
+        {{/if}} {{/each}}
+      </div>
+      {{!-- VIDEO / FILE (không thuộc grid ảnh) --}} {{#each task.attachments}}
+      {{#if (includes type "video")}}
+      <video controls class="media task-video">
+        <source src="{{url}}" type="video/mp4" />
+      </video>
+      {{else}} {{#unless (includes type "image")}}
+      <div class="file-placeholder">
+        <i
+          class="bi bi-file-earmark-text"
+          style="font-size: 4rem; opacity: 0.3"
+        ></i>
+        <p>{{name}}</p>
+      </div>
+      {{/unless}} {{/if}} {{/each}} {{else}}
+      <div class="no-media">
+        <i class="bi bi-image" style="font-size: 4rem; opacity: 0.2"></i>
+        <p>Không có file đính kèm</p>
+      </div>
+      {{/if}}
+    </div>
+    <!-- TASK CONTENT -->
+    <div class="task-content">
+      <div class="task-info">
+        <div class="task-header">
+          <img
+            src="{{task.author.avatar}}"
+            class="avatar"
+            alt="{{task.author.name}}"
+          />
+          <div>
+            <div class="name-line">
+              <strong>{{task.author.name}}</strong>
+              <span> • {{timeAgo task.createdAt}} </span>
+            </div>
           </div>
-          {{/if}} {{/each}}
         </div>
-        {{!-- VIDEO / FILE (không thuộc grid ảnh) --}} {{#each
-        task.attachments}} {{#if (includes type "video")}}
-        <video controls class="media task-video">
-          <source src="{{url}}" type="video/mp4" />
-        </video>
-        {{else}} {{#unless (includes type "image")}}
-        <div class="file-placeholder">
-          <i
-            class="bi bi-file-earmark-text"
-            style="font-size: 4rem; opacity: 0.3"
-          ></i>
-          <p>{{name}}</p>
+        <h3 class="title">{{task.title}}</h3>
+        {{#if task.tags}}
+        <div class="tags">
+          {{#each task.tags}} <span class="tag"> #{{this}} </span> {{/each}}
         </div>
-        {{/unless}} {{/if}} {{/each}} {{else}}
-        <div class="no-media">
-          <i class="bi bi-image" style="font-size: 4rem; opacity: 0.2"></i>
-          <p>Không có file đính kèm</p>
-        </div>
+        {{/if}} {{#if task.description}}
+        <div class="task-desc">{{task.description}}</div>
         {{/if}}
       </div>
-      <!-- TASK CONTENT -->
-      <div class="task-content">
-        <div class="task-info">
-          <div class="task-header">
-            <img
-              src="{{task.author.avatar}}"
-              class="avatar"
-              alt="{{task.author.name}}"
-            />
-            <div>
-              <div class="name-line">
-                <strong>{{task.author.name}}</strong>
-                <span> • {{timeAgo task.createdAt}} </span>
-              </div>
-            </div>
-          </div>
-          <h3 class="title">{{task.title}}</h3>
-          {{#if task.tags}}
-          <div class="tags">
-            {{#each task.tags}} <span class="tag"> #{{this}} </span> {{/each}}
-          </div>
-          {{/if}} {{#if task.description}}
-          <div class="task-desc">{{task.description}}</div>
-          {{/if}}
-        </div>
-      </div>
     </div>
-    {{!-- RIGHT COLUMN --}}
-    <div class="task-right">
-      <div class="comment-box">
-        <!-- COMMENT LIST -->
-        <div class="comment-list" id="comment-list">
-          {{#each comments}}
-          <!-- COMMENT CHA -->
-          <div class="comment-item" data-id="{{this._id}}">
-            <img
-              class="comment-avatar"
-              src="{{this.user.avatar}}"
-              alt="{{this.user.name}}"
-            />
-            <div class="comment-body">
-              <!-- HEADER -->
-              <div class="comment-header">
-                <strong class="comment-name"> {{this.user.name}} </strong>
-                <button class="delete-comment-btn" data-id="{{this._id}}">
-                  <i class="bi bi-x-lg"></i>
-                </button>
-              </div>
-              <!-- CONTENT -->
-              <div class="comment-content">{{this.content}}</div>
-              <!-- FOOTER -->
-              <div class="comment-footer">
-                <button
-                  class="like-comment-btn {{#if this.isLiked}}liked{{/if}}"
-                  data-id="{{this._id}}"
-                >
-                  <i class="bi bi-heart-fill"></i>
-                  <span>{{this.likeCount}}</span>
-                </button>
-                <button class="reply-btn" data-id="{{this._id}}">
-                  <i class="bi bi-reply"></i> Reply
-                </button>
-                <span class="comment-time"> {{timeAgo this.createdAt}} </span>
-              </div>
-              {{!-- REPLIES --}} {{#if this.replies.length}}
-              <div class="reply-list">
-                {{#each this.replies}}
-                <div class="reply-item" data-id="{{this._id}}">
-                  <img
-                    class="comment-avatar"
-                    src="{{this.user.avatar}}"
-                    alt="{{this.user.name}}"
-                  />
-                  <div class="comment-body">
-                    <div class="comment-header">
-                      <strong class="comment-name"> {{this.user.name}} </strong>
-                      <button class="delete-comment-btn" data-id="{{this._id}}">
-                        <i class="bi bi-x-lg"></i>
-                      </button>
-                    </div>
-                    <div class="comment-content">{{this.content}}</div>
-                    <div class="comment-footer">
-                      <button
-                        class="like-comment-btn {{#if this.isLiked}}liked{{/if}}"
-                        data-id="{{this._id}}"
-                      >
-                        <i class="bi bi-heart-fill"></i>
-                        <span>{{this.likeCount}}</span>
-                      </button>
-                      <span class="comment-time">
-                        {{timeAgo this.createdAt}}
-                      </span>
-                    </div>
+  </div>
+
+  {{!-- COMMENTS CARD --}}
+  <div class="task-comments-card">
+    <div class="comment-box">
+      <div class="comments-header">
+        <h4><i class="bi bi-chat-dots-fill"></i> Bình luận</h4>
+      </div>
+
+      <!-- COMMENT INPUT -->
+      <div class="comment-input-box">
+        <input
+          id="comment-input"
+          type="text"
+          placeholder="Viết bình luận của bạn..."
+          autocomplete="off"
+        />
+        <button id="comment-btn" data-task="{{task._id}}">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+
+      <!-- COMMENT LIST -->
+      <div class="comment-list" id="comment-list">
+        {{#each comments}}
+        <!-- COMMENT CHA -->
+        <div class="comment-item" data-id="{{this._id}}">
+          <img
+            class="comment-avatar"
+            src="{{this.user.avatar}}"
+            alt="{{this.user.name}}"
+          />
+          <div class="comment-body">
+            <!-- HEADER -->
+            <div class="comment-header">
+              <strong class="comment-name"> {{this.user.name}} </strong>
+              <button class="delete-comment-btn" data-id="{{this._id}}">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <!-- CONTENT -->
+            <div class="comment-content">{{this.content}}</div>
+            <!-- FOOTER -->
+            <div class="comment-footer">
+              <button
+                class="like-comment-btn {{#if this.isLiked}}liked{{/if}}"
+                data-id="{{this._id}}"
+              >
+                <i class="bi bi-heart-fill"></i>
+                <span>{{this.likeCount}}</span>
+              </button>
+              <button class="reply-btn" data-id="{{this._id}}">
+                <i class="bi bi-reply"></i> Reply
+              </button>
+              <span class="comment-time"> {{timeAgo this.createdAt}} </span>
+            </div>
+            {{!-- REPLIES --}} {{#if this.replies.length}}
+            <div class="reply-list">
+              {{#each this.replies}}
+              <div class="reply-item" data-id="{{this._id}}">
+                <img
+                  class="comment-avatar"
+                  src="{{this.user.avatar}}"
+                  alt="{{this.user.name}}"
+                />
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <strong class="comment-name"> {{this.user.name}} </strong>
+                    <button class="delete-comment-btn" data-id="{{this._id}}">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
+                  <div class="comment-content">{{this.content}}</div>
+                  <div class="comment-footer">
+                    <button
+                      class="like-comment-btn {{#if this.isLiked}}liked{{/if}}"
+                      data-id="{{this._id}}"
+                    >
+                      <i class="bi bi-heart-fill"></i>
+                      <span>{{this.likeCount}}</span>
+                    </button>
+                    <span class="comment-time">
+                      {{timeAgo this.createdAt}}
+                    </span>
                   </div>
                 </div>
-                {{/each}}
               </div>
-              {{/if}}
+              {{/each}}
             </div>
+            {{/if}}
           </div>
-          {{else}}
-          <div class="comment-list empty">
-            No comments yet<br />
-            Be the first to comment!
-          </div>
-          {{/each}}
         </div>
-        <!-- COMMENT INPUT -->
-        <div class="comment-input-box">
-          <input
-            id="comment-input"
-            type="text"
-            placeholder="Write your comment..."
-            autocomplete="off"
-          />
-          <button id="comment-btn" data-task="{{task._id}}">
-            <i class="bi bi-send-fill"></i>
-          </button>
+        {{else}}
+        <div class="comment-list-empty">
+          <i
+            class="bi bi-chat-square-text"
+            style="font-size: 2.4rem; opacity: 0.25"
+          ></i>
+          <p>Chưa có bình luận nào<br />Hãy là người đầu tiên bình luận!</p>
         </div>
+        {{/each}}
       </div>
     </div>
   </div>
@@ -287,7 +294,7 @@
         renderNewComment(data.comment);
         input.value = '';
         input.dataset.replyTo = '';
-        input.placeholder = 'Write your comment...';
+        input.placeholder = 'Viết bình luận của bạn...';
       } catch (err) {
         console.error(err);
         alert('Failed to send comment');
@@ -408,6 +415,8 @@
           </div>
         </div>
       `;
+      const emptyState = commentList.querySelector('.comment-list-empty');
+      if (emptyState) emptyState.remove();
       commentList.insertAdjacentHTML('afterbegin', html);
     }
     // EVENTS
