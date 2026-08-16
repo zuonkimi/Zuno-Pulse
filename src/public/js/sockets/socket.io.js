@@ -26,8 +26,8 @@ function formatConversationTime(date) {
 }
 // CONNECT
 socket.on('connect', () => {
-  console.log('Connected:', socket.id);
-  console.log('emit request_online_users');
+  // console.log('Connected:', socket.id);
+  // console.log('emit request_online_users');
   socket.emit('request_online_users');
   if (window.conversationId) {
     socket.emit('join_conversation', window.conversationId);
@@ -35,7 +35,7 @@ socket.on('connect', () => {
 });
 // HEADER BADGE
 function updateHeaderMessageBadge(count) {
-  console.log('updateHeaderMessageBadge:', count);
+  // console.log('updateHeaderMessageBadge:', count);
   const messageBtn = document.querySelector('.message-dropdown .nav-icon-btn');
   if (!messageBtn) return;
   let badge = messageBtn.querySelector('.notification-badge');
@@ -123,7 +123,7 @@ if (form) {
 }
 // NEW MESSAGE
 socket.on('new_message', message => {
-  console.log('PAGE SOCKET:', message);
+  // console.log('PAGE SOCKET:', message);
   function escapeHtml(str = '') {
     return str
       .replace(/&/g, '&amp;')
@@ -133,7 +133,7 @@ socket.on('new_message', message => {
       .replace(/'/g, '&#039;');
   }
   const chatBody = document.querySelector('.chat-body');
-  console.log('chatBody=', chatBody);
+  // console.log('chatBody=', chatBody);
   if (!chatBody) return;
   const msgConversationId =
     message.conversationId || message.conversation?._id || message.conversation;

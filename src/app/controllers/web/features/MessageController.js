@@ -112,7 +112,7 @@ class MessageController {
         .get('io')
         .to(conversationId.toString())
         .emit('new_message', formattedMessage);
-      console.log('Emit new_message:', conversationId);
+      // console.log('Emit new_message:', conversationId);
       req.app.get('io').to(`user_${receiver}`).emit('conversation_updated', {
         conversationId: conversationId.toString(),
         lastMessage: content,

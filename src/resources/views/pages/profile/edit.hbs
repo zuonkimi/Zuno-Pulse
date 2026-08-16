@@ -1,65 +1,102 @@
-<div class="edit-profile-page">
-  <div class="task-form">
-    <!-- HEADER -->
-    <div class="task-list-header">
-      <h2 class="mb-0"><i class="bi bi-person-fill-gear"></i> Edit Profile</h2>
-      <a href="/profile/{{user._id}}" class="btn btn-outline-secondary">Back</a>
+<div class="profile-page">
+  <div class="edit-profile-card">
+    <div class="edit-profile-header">
+      <h2><i class="bi bi-person-fill-gear"></i> Edit Profile</h2>
+      <a href="/profile/{{user._id}}" class="btn-profile btn-edit">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
     </div>
 
     <form
       action="/profile/{{user._id}}?_method=PUT"
       method="POST"
       enctype="multipart/form-data"
-      class="mt-3 edit-form"
+      class="edit-form"
     >
       <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
       <!-- AVATAR -->
-      <div class="mb-3 text-center">
-        <div class="avatar avatar-lg mx-auto mb-2">
+      <div class="avatar-upload">
+        <div class="avatar-upload-circle">
           {{#if user.avatar}}
           <img src="{{user.avatar}}" id="avatarPreview" />
           {{else}}
-          <div class="avatar-placeholder">U</div>
+          <div class="avatar-fallback" id="avatarPreview">U</div>
           {{/if}}
+          <label class="avatar-upload-btn" for="avatarInput">
+            <i class="bi bi-camera-fill"></i>
+          </label>
         </div>
         <input
           type="file"
+          id="avatarInput"
           name="avatar"
-          class="form-control"
           accept="image/*"
+          hidden
         />
+        <span class="avatar-hint"
+          >Click the camera icon to change your profile picture</span
+        >
       </div>
+
       <!-- NAME -->
-      <div class="mb-3">
+      <div class="form-group">
+        <label for="nameInput">Display Name</label>
         <input
+          id="nameInput"
           name="name"
           class="form-control"
           value="{{user.name}}"
           required
         />
       </div>
+
       <!-- BIO -->
-      <div class="mb-3">
-        <textarea name="bio" class="form-control">{{user.bio}}</textarea>
+      <div class="form-group">
+        <label for="bioInput">About Me</label>
+        <textarea
+          id="bioInput"
+          name="bio"
+          class="form-control"
+          rows="4"
+          placeholder="Write a few lines about yourself..."
+        >
+{{user.bio}}</textarea
+        >
       </div>
-      <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+
+      <div class="edit-form-actions">
+        <a href="/profile/{{user._id}}" class="btn-profile btn-cancel"
+          >Cancel</a
+        >
+        <button type="submit" class="btn-profile btn-follow">
+          <i class="bi bi-check-lg"></i> Save Changes
+        </button>
+      </div>
     </form>
   </div>
 </div>
 
 <script>
-  const input = document.querySelector('input[name="avatar"]');
-  const preview = document.getElementById('avatarPreview');
+  const avatarInput = document.getElementById('avatarInput');
 
-  input.addEventListener('change', event => {
+  avatarInput.addEventListener('change', event => {
     const file = event.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       alert('Vui lòng chọn file hình ảnh!');
-      input.value = ''; // reset input
+      avatarInput.value = '';
       return;
     }
     const url = URL.createObjectURL(file);
+    let preview = document.getElementById('avatarPreview');
+    // Nếu đang là placeholder (div chữ "U"), thay bằng thẻ img thật
+    if (preview.tagName !== 'IMG') {
+      const img = document.createElement('img');
+      img.id = 'avatarPreview';
+      preview.replaceWith(img);
+      preview = img;
+    }
     preview.src = url;
     preview.onload = () => URL.revokeObjectURL(url);
   });

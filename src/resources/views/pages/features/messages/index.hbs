@@ -602,7 +602,7 @@ ${c.isActive ? 'active' : ''}
       );
       const data = await res.json();
       highlightSearchResult(data);
-      console.log(data);
+      // console.log(data);
     }, 300);
   });
 
@@ -788,7 +788,7 @@ ${c.isActive ? 'active' : ''}
     if (!preview) return;
     const replyId = preview.dataset.replyId;
     const target = document.querySelector(`[data-message-id="${replyId}"]`);
-    console.log(target);
+    //console.log(target);
     if (!target) return;
     target.scrollIntoView({
       behavior: 'smooth',

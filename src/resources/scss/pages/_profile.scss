@@ -428,3 +428,145 @@
     height: 200px;
   }
 }
+
+/* ==============================
+   EDIT PROFILE
+   ============================== */
+
+.edit-profile-card {
+  max-width: 560px;
+  margin: 0 auto;
+  border-radius: 30px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 32px;
+}
+
+.edit-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    i {
+      color: var(--primary);
+    }
+  }
+}
+
+/* AVATAR UPLOAD */
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.avatar-upload-circle {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 198, 255, 0.9),
+    rgba(59, 130, 246, 0.7)
+  );
+  box-shadow: 0 15px 35px rgba(0, 198, 255, 0.2);
+
+  img,
+  .avatar-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--text);
+    border: 4px solid var(--card);
+  }
+}
+
+.avatar-upload-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00c6ff, #2563eb);
+  color: white;
+  border: 3px solid var(--card);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  i {
+    font-size: 14px;
+  }
+  &:hover {
+    transform: scale(1.08);
+  }
+}
+
+.avatar-hint {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* FORM */
+.edit-form .form-group {
+  margin-bottom: 20px;
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+  }
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+.edit-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  .btn-profile {
+    flex: 1;
+  }
+}
+
+.btn-cancel {
+  background: var(--bg-secondary);
+  color: var(--text);
+  &:hover {
+    background: var(--hover);
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-profile-card {
+    padding: 22px;
+  }
+}
